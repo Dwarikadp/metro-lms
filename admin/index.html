@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Metro Group — HR Admin Panel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root{
+  --bg:#050810;--bg2:#0a0f1e;--bg3:#0f1628;
+  --surf:#111827;--surf2:#1a2236;--surf3:#1e2a42;
+  --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.12);
+  --gold:#c9a227;--gold2:#e8c547;--gold3:rgba(201,162,39,0.12);
+  --blue:#3b82f6;--blue2:#1d4ed8;
+  --green:#10b981;--red:#ef4444;--purple:#8b5cf6;--amber:#f59e0b;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --r:10px;--r2:8px;--shadow:0 4px 24px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--surf2);border-radius:2px}
+
+/* SCREENS */
+.scr{display:none;min-height:100vh}
+.scr.on{display:flex}
+
+/* ── LOGIN ── */
+#s-login{align-items:center;justify-content:center;flex-direction:column;
+  background:radial-gradient(ellipse at 30% 20%,rgba(139,26,26,.08),transparent 50%),
+             radial-gradient(ellipse at 70% 80%,rgba(59,130,246,.05),transparent 50%)}
+.login-card{background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;padding:40px;width:100%;max-width:420px;box-shadow:var(--shadow),0 0 40px rgba(201,162,39,.05);position:relative}
+.login-card::before{content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.lc-brand{text-align:center;margin-bottom:28px}
+.lc-badge{display:inline-block;background:var(--gold3);border:1px solid rgba(201,162,39,.3);color:var(--gold);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.lc-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700}
+.lc-sub{font-size:13px;color:var(--text2);margin-top:4px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.fg input{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);font-size:14px;color:var(--text);outline:none;font-family:'Inter',sans-serif;transition:border-color .2s}
+.fg input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.1)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a07d1a);color:#000;width:100%;font-size:14px;padding:13px}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(201,162,39,.35)}
+.btn-ghost{background:transparent;border:1px solid var(--bdr2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
+.btn-blue:hover{opacity:.9;transform:translateY(-1px)}
+.btn-green{background:linear-gradient(135deg,var(--green),#047857);color:#fff}
+.btn-green:hover{opacity:.9}
+.btn-red{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:var(--red)}
+.btn-red:hover{background:rgba(239,68,68,.2)}
+.btn-amber{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:var(--amber)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-xs{padding:5px 10px;font-size:11px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none!important}
+.err-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.err-msg.show{display:block}
+
+/* ── MAIN APP ── */
+#s-app{flex-direction:column}
+
+/* TOPBAR */
+.topbar{height:62px;background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 24px;justify-content:space-between;position:sticky;top:0;z-index:200}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,.25),transparent)}
+.tb-l{display:flex;align-items:center;gap:14px}
+.tb-logo{height:34px;object-fit:contain}
+.tb-divider{width:1px;height:22px;background:var(--bdr2)}
+.tb-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600}
+.tb-badge{background:var(--gold3);border:1px solid rgba(201,162,39,.3);color:var(--gold);font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;letter-spacing:.5px}
+.tb-r{display:flex;align-items:center;gap:10px}
+.admin-chip{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:30px;padding:5px 12px 5px 6px}
+.admin-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a07d1a);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000}
+
+/* BODY */
+.app-body{display:flex;flex:1;min-height:calc(100vh - 62px)}
+
+/* SIDEBAR */
+.sidebar{width:230px;background:var(--surf);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo-wrap{padding:20px 16px 12px}
+.sb-nav{padding:8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r2);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:var(--surf2);color:var(--text)}
+.nav-item.active{background:var(--gold3);color:var(--gold);border:1px solid rgba(201,162,39,.2)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.sb-footer{margin-top:auto;padding:16px;border-top:1px solid var(--bdr)}
+.sb-footer-txt{font-size:11px;color:var(--text3)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:28px;background:var(--bg)}
+
+/* PAGE HEADER */
+.pg-hd{margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.pg-hd h1{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700}
+.pg-hd p{font-size:13px;color:var(--text2);margin-top:3px}
+.pg-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+
+/* PANELS */
+.panel{display:none}.panel.on{display:block}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r) var(--r) 0 0}
+.sc-gold::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.sc-blue::before{background:linear-gradient(90deg,var(--blue),#60a5fa)}
+.sc-green::before{background:linear-gradient(90deg,var(--green),#34d399)}
+.sc-purple::before{background:linear-gradient(90deg,var(--purple),#a78bfa)}
+.sc-amber::before{background:linear-gradient(90deg,var(--amber),#fcd34d)}
+.stat-val{font-size:30px;font-weight:800;font-family:'Space Grotesk',sans-serif}
+.stat-lbl{font-size:12px;color:var(--text2);margin-top:2px}
+.stat-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:12px;overflow:hidden}
+.stat-bf{height:100%;border-radius:2px;transition:width .5s}
+
+/* TABLE */
+.tbl-wrap{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.tbl-toolbar{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bdr);flex-wrap:wrap}
+.tbl-toolbar h3{font-size:14px;font-weight:600;flex:1}
+.search-inp{padding:8px 12px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);color:var(--text);font-size:13px;outline:none;width:220px;font-family:'Inter',sans-serif}
+.search-inp:focus{border-color:var(--gold)}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;background:var(--bg3);border-bottom:1px solid var(--bdr);white-space:nowrap}
+td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.td-name{font-weight:500}
+.td-id{font-family:monospace;font-size:12px;color:var(--text2)}
+.td-mod{display:flex;gap:4px;flex-wrap:wrap}
+.mod-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.m-crm{background:rgba(59,130,246,.12);color:var(--blue)}
+.m-elc{background:rgba(139,92,246,.12);color:var(--purple)}
+.m-payroll{background:rgba(16,185,129,.12);color:var(--green)}
+.m-admin{background:rgba(245,158,11,.12);color:var(--amber)}
+  .m-rera{background:rgba(239,68,68,.12);color:var(--red)}
+  .m-salescrm{background:rgba(6,182,212,.12);color:#06b6d4}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px}
+.b-green{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.b-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.b-amber{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.b-blue{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.b-gold{background:var(--gold3);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
+.prog-cell{display:flex;align-items:center;gap:8px}
+.prog-mini{width:60px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;flex-shrink:0}
+.prog-mini-fill{height:100%;border-radius:3px}
+.act-btns{display:flex;gap:6px;align-items:center;white-space:nowrap}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.on{display:flex}
+.modal{background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;padding:32px;width:100%;max-width:520px;position:relative;box-shadow:var(--shadow),0 0 40px rgba(201,162,39,.05);max-height:90vh;overflow-y:auto}
+.modal::before{content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:50%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-hd h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700}
+.modal-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;padding:4px}
+.modal-close:hover{color:var(--text)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg-note{font-size:12px;color:var(--text3);margin-top:5px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:18px;border-top:1px solid var(--bdr)}
+
+/* DETAIL PANEL */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.detail-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:18px}
+.detail-card h3{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:13px}
+.detail-row:last-child{border-bottom:none}
+.detail-lbl{color:var(--text2)}
+.detail-val{font-weight:500;text-align:right}
+.activity-list{display:flex;flex-direction:column;gap:6px}
+.act-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r2);font-size:12px}
+.act-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.act-text{flex:1;color:var(--text2)}
+.act-time{color:var(--text3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:12px 18px;font-size:13px;font-weight:500;z-index:999;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;max-width:300px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{border-left:3px solid var(--green);color:var(--green)}
+.toast.err{border-left:3px solid var(--red);color:var(--red)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 20px;color:var(--text2)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--text3)}
+
+/* CHART BAR */
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bc-row{display:flex;align-items:center;gap:10px}
+.bc-lbl{font-size:12px;color:var(--text2);width:110px;flex-shrink:0;text-align:right}
+.bc-bar-wrap{flex:1;height:20px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.bc-bar{height:100%;border-radius:4px;transition:width .7s;display:flex;align-items:center;padding:0 8px}
+.bc-bar-txt{font-size:10px;font-weight:700;color:#000}
+.bc-val{font-size:12px;color:var(--text2);width:40px;text-align:right}
+
+/* Change pwd */
+.chpwd-form{max-width:380px}
+
+/* ── LIVE FEED ── */
+.live-feed{display:flex;flex-direction:column;gap:0}
+.lf-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr);animation:fadeSlide .4s ease}
+.lf-item:last-child{border-bottom:none}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.lf-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.lf-icon.topic{background:rgba(59,130,246,.15)}
+.lf-icon.quiz-pass{background:rgba(16,185,129,.15)}
+.lf-icon.quiz-fail{background:rgba(239,68,68,.15)}
+.lf-icon.cert{background:rgba(201,162,39,.15)}
+.lf-body{flex:1;min-width:0}
+.lf-name{font-size:13px;font-weight:600;color:var(--text)}
+.lf-action{font-size:12px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lf-time{font-size:11px;color:var(--text3);flex-shrink:0;margin-top:2px}
+.lf-empty{font-size:13px;color:var(--text3);text-align:center;padding:20px 0}
+.lf-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── MODULE PROGRESS BARS ── */
+.mod-prog-row{margin-bottom:10px}
+.mod-prog-row:last-child{margin-bottom:0}
+.mod-prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.mod-prog-name{font-size:12px;font-weight:600;color:var(--text2)}
+.mod-prog-count{font-size:11px;color:var(--text3)}
+.mod-prog-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.mod-prog-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ── LIVE INDICATOR ── */
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;margin-left:8px}
+
+@media(max-width:768px){.sidebar{display:none}.detail-grid{grid-template-columns:1fr}.fg-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div id="s-login" class="scr on">
+  <div class="login-card">
+    <div class="lc-brand">
+      <div class="lc-badge">HR Admin Portal</div>
+      <div class="lc-title">Metro Group</div>
+      <div class="lc-sub">Farvision LMS — Administration</div>
+    </div>
+    <div id="login-err" class="err-msg"></div>
+    <div class="fg"><label>Admin Username</label><input id="l-user" type="text" placeholder="admin" autocomplete="username"/></div>
+    <div class="fg"><label>Password</label><input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"/></div>
+    <button class="btn btn-gold" onclick="doAdminLogin()">Sign In to Admin Panel →</button>
+    <p style="font-size:12px;color:var(--text3);text-align:center;margin-top:16px">Default: admin / Metro@Admin123 — change after first login</p>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="s-app" class="scr">
+  <div class="topbar">
+    <div class="tb-l">
+      <div class="tb-title">Metro Group LMS</div>
+      <div class="tb-divider"></div>
+      <span class="tb-badge">HR ADMIN</span>
+    </div>
+    <div class="tb-r">
+      <div class="admin-chip">
+        <div class="admin-av">HR</div>
+        <span style="font-size:13px;font-weight:500" id="admin-name">Admin</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-nav" style="padding-top:16px">
+        <div class="nav-item active" data-panel="dashboard" onclick="showPanel('dashboard',this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-panel="employees" onclick="showPanel('employees',this)">
+          <span class="nav-icon">👥</span> Employees
+        </div>
+        <div class="nav-item" data-panel="progress" onclick="showPanel('progress',this)">
+          <span class="nav-icon">📈</span> Progress Tracker
+        </div>
+        <div class="nav-item" data-panel="certificates" onclick="showPanel('certificates',this)">
+          <span class="nav-icon">🎓</span> Certificates
+        </div>
+        <div class="nav-item" data-panel="settings" onclick="showPanel('settings',this)">
+          <span class="nav-icon">⚙️</span> Settings
+        </div>
+      </div>
+      <div class="sb-footer">
+        <div class="sb-footer-txt">Metro Group · Farvision LMS</div>
+        <div class="sb-footer-txt" style="margin-top:2px">Backend: <span id="api-status" style="color:var(--amber)">connecting…</span></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main" id="main">
+
+      <!-- DASHBOARD -->
+      <div class="panel on" id="p-dashboard">
+        <div class="pg-hd">
+          <div><h1>Dashboard</h1><p>Overview of all trainee activity</p></div>
+          <button class="btn btn-ghost btn-sm" onclick="loadDashboard()">↻ Refresh</button>
+        </div>
+        <div class="stat-grid" id="stat-grid">
+          <div class="stat-card sc-gold"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Total Employees</div><div class="stat-bar"><div class="stat-bf" id="sb-total" style="width:100%;background:var(--gold)"></div></div></div>
+          <div class="stat-card sc-blue"><div class="stat-val" id="s-started">—</div><div class="stat-lbl">Training Started</div><div class="stat-bar"><div class="stat-bf" id="sb-started" style="background:var(--blue)"></div></div></div>
+          <div class="stat-card sc-green"><div class="stat-val" id="s-certs">—</div><div class="stat-lbl">Certificates Issued</div><div class="stat-bar"><div class="stat-bf" id="sb-certs" style="background:var(--green)"></div></div></div>
+          <div class="stat-card sc-purple"><div class="stat-val" id="s-quizzes">—</div><div class="stat-lbl">Quizzes Passed</div><div class="stat-bar"><div class="stat-bf" id="sb-quizzes" style="background:var(--purple)"></div></div></div>
+          <div class="stat-card sc-amber"><div class="stat-val" id="s-avg">—%</div><div class="stat-lbl">Avg Quiz Score</div><div class="stat-bar"><div class="stat-bf" id="sb-avg" style="background:var(--amber)"></div></div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div class="tbl-wrap" style="padding:18px">
+            <h3 style="font-size:13px;font-weight:600;margin-bottom:16px">Module engagement</h3>
+            <div class="bar-chart" id="mod-chart"></div>
+          </div>
+          <div class="tbl-wrap" style="padding:18px">
+            <div style="display:flex;align-items:center;margin-bottom:14px">
+              <h3 style="font-size:13px;font-weight:600;margin:0">Live activity feed</h3>
+              <span class="live-badge" id="live-badge"><span class="lf-dot"></span>LIVE</span>
+            </div>
+            <div id="live-feed" style="max-height:260px;overflow-y:auto">
+              <div class="lf-empty">Waiting for trainee activity…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPLOYEES -->
+      <div class="panel" id="p-employees">
+        <div class="pg-hd">
+          <div><h1>Employees</h1><p>Manage trainee access and module assignments</p></div>
+          <div class="pg-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openBulkModal()">⬆ Bulk Add CSV</button>
+            <button class="btn btn-green btn-sm" onclick="openAddModal()">+ Add Employee</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-toolbar">
+            <h3>All Employees</h3>
+            <input class="search-inp" id="emp-search" placeholder="Search name or ID…" oninput="filterEmployees()">
+            <select id="emp-filter-mod" class="search-inp" style="width:140px" onchange="filterEmployees()">
+              <option value="">All modules</option>
+              <option value="CRM">CRM</option>
+              <option value="ELC">ELC</option>
+              <option value="Payroll">Payroll</option>
+              <option value="Administration">Administration</option>
+            </select>
+          </div>
+          <div class="tbl-scroll">
+            <table>
+              <thead><tr>
+                <th>Employee</th><th>ID</th><th>Department</th>
+                <th>Modules</th><th>Progress</th><th>Status</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="emp-tbody"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS TRACKER -->
+      <div class="panel" id="p-progress">
+        <div class="pg-hd">
+          <div><h1>Progress Tracker</h1><p>Live module-by-module progress for every trainee</p></div>
+          <button class="btn btn-ghost btn-sm" onclick="loadProgress()">↻ Refresh</button>
+        </div>
+        <div class="tbl-wrap" style="margin-bottom:14px">
+          <div class="tbl-toolbar">
+            <h3>All Trainees</h3>
+            <input class="search-inp" id="prog-search" placeholder="Search employee…" oninput="filterProgress()">
+          </div>
+          <div id="prog-cards" style="padding:4px 0">
+            <div style="text-align:center;padding:32px;color:var(--text3)">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICATES -->
+      <div class="panel" id="p-certificates">
+        <div class="pg-hd">
+          <div><h1>Certificates</h1><p>All issued completion certificates</p></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-scroll">
+            <table>
+              <thead><tr>
+                <th>Employee</th><th>Certificate ID</th><th>Modules</th>
+                <th>Scores</th><th>Issued On</th><th>Verify</th>
+              </tr></thead>
+              <tbody id="cert-tbody"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="p-settings">
+        <div class="pg-hd"><div><h1>Settings</h1><p>Admin account configuration</p></div></div>
+        <div style="max-width:440px">
+          <div class="tbl-wrap" style="padding:24px;margin-bottom:18px">
+            <h3 style="font-size:14px;font-weight:600;margin-bottom:18px">Change Admin Password</h3>
+            <div class="fg"><label>Current Password</label><input type="password" id="cp-old" placeholder="Current password"/></div>
+            <div class="fg"><label>New Password</label><input type="password" id="cp-new" placeholder="New password (min 8 chars)"/></div>
+            <div class="fg"><label>Confirm New Password</label><input type="password" id="cp-confirm" placeholder="Confirm new password"/></div>
+            <button class="btn btn-blue btn-sm" onclick="changePassword()">Update Password</button>
+          </div>
+          <div class="tbl-wrap" style="padding:24px">
+            <h3 style="font-size:14px;font-weight:600;margin-bottom:14px">API Connection</h3>
+            <div class="detail-row"><div class="detail-lbl">Backend URL</div><div class="detail-val" style="font-family:monospace;font-size:12px" id="api-url-display"></div></div>
+            <div class="detail-row"><div class="detail-lbl">Status</div><div id="api-status2" class="detail-val"></div></div>
+            <div style="margin-top:14px">
+              <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">Backend URL (if changed)</label>
+              <input type="text" id="api-url-input" class="search-inp" style="width:100%" placeholder="http://localhost:3001">
+              <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="saveApiUrl()">Save & Reconnect</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPLOYEE DETAIL (overlay) -->
+      <div class="panel" id="p-emp-detail">
+        <div class="pg-hd">
+          <div><h1 id="detail-name">Employee Detail</h1><p id="detail-sub"></p></div>
+          <button class="btn btn-ghost btn-sm" onclick="showPanel('employees',document.querySelector('[data-panel=employees]'))">← Back</button>
+        </div>
+        <div class="detail-grid" id="detail-grid"></div>
+        <div class="tbl-wrap" style="margin-bottom:16px;padding:18px">
+          <h3 style="font-size:13px;font-weight:600;margin-bottom:14px">Progress by topic</h3>
+          <div id="detail-progress"></div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div>
+</div>
+
+<!-- ══════════════════ MODALS ══════════════════ -->
+
+<!-- Add Employee Modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2 id="modal-title">Add New Employee</h2>
+      <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
+    </div>
+    <div id="modal-err" class="err-msg"></div>
+    <div class="fg-row">
+      <div class="fg"><label>Employee ID *</label><input id="m-id" type="text" placeholder="EMP006"/><div class="fg-note">Unique ID assigned by company</div></div>
+      <div class="fg"><label>Full Name *</label><input id="m-name" type="text" placeholder="Rahul Sharma"/></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>Email</label><input id="m-email" type="email" placeholder="rahul@metrogroup.com"/></div>
+      <div class="fg"><label>Department</label><input id="m-dept" type="text" placeholder="Sales"/></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>Role / Designation</label><input id="m-role" type="text" placeholder="CRM Executive"/></div>
+      <div class="fg"><label>Password (optional)</label><input id="m-pwd" type="text" placeholder="Leave blank = EmpID@Metro"/><div class="fg-note">Default: [EmpID]@Metro e.g. EMP006@Metro</div></div>
+    </div>
+    <div class="fg" style="grid-column:1/-1">
+      <label>Assigned Modules * <span style="font-weight:400;color:var(--text3)">(select one or more)</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);cursor:pointer;font-size:13px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--bdr2)'">
+          <input type="checkbox" name="mod-cb" value="CRM" style="width:15px;height:15px;accent-color:var(--blue)"> <span>🏢 CRM Module</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);cursor:pointer;font-size:13px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--bdr2)'">
+          <input type="checkbox" name="mod-cb" value="ELC" style="width:15px;height:15px;accent-color:var(--purple)"> <span>👥 Employee Life Cycle</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);cursor:pointer;font-size:13px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--bdr2)'">
+          <input type="checkbox" name="mod-cb" value="Payroll" style="width:15px;height:15px;accent-color:var(--green)"> <span>💰 Payroll Module</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);cursor:pointer;font-size:13px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--bdr2)'">
+          <input type="checkbox" name="mod-cb" value="Administration" style="width:15px;height:15px;accent-color:var(--amber)"> <span>⚙️ Administration</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:1px solid rgba(239,68,68,.4);border-radius:var(--r2);cursor:pointer;font-size:13px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='rgba(239,68,68,.4)'">
+          <input type="checkbox" name="mod-cb" value="RERA" style="width:15px;height:15px;accent-color:#ef4444"> <span>⚖️ Legal & RERA Foundation</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:1px solid rgba(6,182,212,.4);border-radius:var(--r2);cursor:pointer;font-size:13px;transition:border-color .15s" onmouseover="this.style.borderColor='#06b6d4'" onmouseout="this.style.borderColor='rgba(6,182,212,.4)'">
+          <input type="checkbox" name="mod-cb" value="SalesCRM" style="width:15px;height:15px;accent-color:#06b6d4"> <span>📋 Sales to CRM Workflow</span></label>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button type="button" class="btn btn-ghost btn-xs" onclick="selectAllMods()">✓ Select All</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="clearAllMods()">✕ Clear All</button>
+      </div>
+      <input type="hidden" id="m-mod" value="">
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="btn btn-green btn-sm" id="modal-submit-btn" onclick="submitEmployee()">Create Employee</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Add Modal -->
+<div class="modal-overlay" id="bulk-modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2>Bulk Add Employees</h2>
+      <button class="modal-close" onclick="closeModal('bulk-modal')">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Paste CSV data below. Format: <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:12px">EmpID, Name, Email, Department, Role, Module</code></p>
+    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r2);padding:12px;font-size:11px;color:var(--text3);margin-bottom:14px;font-family:monospace">
+      EMP010, Arjun Verma, arjun@metro.com, Sales, CRM Executive, CRM<br>
+      EMP011, Meena Iyer, meena@metro.com, HR, HR Executive, ELC<br>
+      EMP012, Suresh Kumar, suresh@metro.com, Legal, RERA Officer, RERA<br>
+      EMP013, Rahul Das, rahul@metro.com, Sales, Sales Executive, SalesCRM<br>
+      EMP014, Team Lead, lead@metro.com, Sales, Sales Manager, CRM,RERA,SalesCRM
+    </div>
+    <textarea id="bulk-csv" style="width:100%;height:150px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r2);color:var(--text);font-size:13px;padding:12px;resize:vertical;outline:none;font-family:monospace" placeholder="Paste CSV here…"></textarea>
+    <div id="bulk-result" style="margin-top:12px;display:none"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('bulk-modal')">Cancel</button>
+      <button class="btn btn-blue btn-sm" onclick="submitBulk()">Import Employees</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-hd">
+      <h2>Reset Password</h2>
+      <button class="modal-close" onclick="closeModal('reset-modal')">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Reset password for <strong id="reset-emp-name"></strong> (<span id="reset-emp-id"></span>)</p>
+    <div class="fg">
+      <label>New Password</label>
+      <input id="reset-pwd" type="text" placeholder="Leave blank for default [EmpID]@Metro"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('reset-modal')">Cancel</button>
+      <button class="btn btn-amber btn-sm" onclick="submitReset()">Reset Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIG & STATE
+// ═══════════════════════════════════════════════════════
+let API = localStorage.getItem('mg_api_url') || 'http://localhost:3001';
+let TOKEN = '';
+let ALL_EMPLOYEES = [];
+let EDITING_ID = null;
+let RESET_EMP_ID = null;
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function api(path, opts = {}) {
+  return fetch(API + path, {
+    headers: { 'Content-Type': 'application/json', 'Authorization': TOKEN ? `Bearer ${TOKEN}` : '' },
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  }).then(r => r.json());
+}
+
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function fmtTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+function modTag(m) {
+  const map = { CRM:'m-crm', ELC:'m-elc', Payroll:'m-payroll', Administration:'m-admin' };
+  return `<span class="mod-tag ${map[m]||''}">${m==='Administration'?'Admin':m}</span>`;
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.classList.add('show'); }
+}
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('on'); }
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+// ═══════════════════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════════════════
+async function doAdminLogin() {
+  const username = document.getElementById('l-user').value.trim();
+  const password = document.getElementById('l-pass').value;
+  clearErr('login-err');
+  if (!username || !password) { showErr('login-err', 'Please enter username and password'); return; }
+
+  try {
+    const data = await api('/api/auth/admin-login', { method: 'POST', body: { username, password } });
+    if (data.error) { showErr('login-err', data.error); return; }
+    TOKEN = data.token;
+    localStorage.setItem('mg_admin_token', TOKEN);
+    document.getElementById('admin-name').textContent = data.admin.name;
+    showScreen('s-app');
+    loadDashboard();
+    loadEmployees();
+    checkApiStatus();
+    startLiveUpdates();
+  } catch (e) {
+    showErr('login-err', 'Cannot connect to backend server. Make sure the server is running at ' + API);
+  }
+}
+
+function adminLogout() {
+  TOKEN = '';
+  localStorage.removeItem('mg_admin_token');
+  location.reload();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('s-login').classList.contains('on')) doAdminLogin();
+});
+
+// ═══════════════════════════════════════════════════════
+//  PANEL NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('on');
+  if (el) el.classList.add('active');
+  if (id !== 'emp-detail') VIEWING_EMP_ID = null;
+  if (id === 'progress') loadProgress();
+  if (id === 'certificates') loadCertificates();
+  if (id === 'settings') loadSettings();
+}
+
+// ═══════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════
+async function loadDashboard() {
+  try {
+    const d = await api('/api/admin/stats');
+    if (d.error) return;
+
+    document.getElementById('s-total').textContent = d.total;
+    document.getElementById('s-started').textContent = d.started;
+    document.getElementById('s-certs').textContent = d.certs;
+    document.getElementById('s-quizzes').textContent = d.quizzes_passed;
+    document.getElementById('s-avg').textContent = d.avg_score + '%';
+
+    const pct = (n, of) => of ? Math.round(n / of * 100) : 0;
+    document.getElementById('sb-started').style.width = pct(d.started, d.total) + '%';
+    document.getElementById('sb-certs').style.width = pct(d.certs, d.total) + '%';
+    document.getElementById('sb-quizzes').style.width = Math.min(d.quizzes_passed * 10, 100) + '%';
+    document.getElementById('sb-avg').style.width = d.avg_score + '%';
+
+    // Module bar chart
+    const modColors = { CRM:'#3b82f6', ELC:'#8b5cf6', Payroll:'#10b981', Administration:'#f59e0b', RERA:'#ef4444', SalesCRM:'#06b6d4' };
+    const modLabels2 = { CRM:'CRM', ELC:'ELC', Payroll:'Payroll', Administration:'Admin', RERA:'Legal & RERA', SalesCRM:'Sales CRM' };
+    const maxLearners = Math.max(...(d.mod_stats||[]).map(m => m.learners), 1);
+    document.getElementById('mod-chart').innerHTML = (d.mod_stats||[]).map(m =>
+      `<div class="bc-row">
+        <div class="bc-lbl">${modLabels2[m.module]||m.module}</div>
+        <div class="bc-bar-wrap"><div class="bc-bar" style="width:${Math.round(m.learners/maxLearners*100)}%;background:${modColors[m.module]||'#64748b'}">
+          <span class="bc-bar-txt">${m.learners}</span>
+        </div></div>
+        <div class="bc-val">${m.topics_done} topics</div>
+      </div>`
+    ).join('') || '<p style="font-size:13px;color:var(--text3)">No activity yet</p>';
+
+    // Recent activity
+    document.getElementById('recent-act').innerHTML = (d.recent_activity||[]).map(a =>
+      `<div class="act-item">
+        <div class="act-dot"></div>
+        <div class="act-text"><strong>${a.name}</strong> completed <em>${a.topic}</em></div>
+        <div class="act-time">${fmtTime(a.completed_at)}</div>
+      </div>`
+    ).join('') || '<p style="font-size:13px;color:var(--text3)">No activity yet</p>';
+  } catch (e) {
+    console.error('Dashboard load failed', e);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  EMPLOYEES
+// ═══════════════════════════════════════════════════════
+async function loadEmployees() {
+  try {
+    const d = await api('/api/admin/employees');
+    if (d.error) { toast(d.error, 'err'); return; }
+    ALL_EMPLOYEES = d.employees;
+    renderEmployees(ALL_EMPLOYEES);
+  } catch(e) {
+    document.getElementById('emp-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Cannot reach server</td></tr>`;
+  }
+}
+
+function renderEmployees(list) {
+  const tbody = document.getElementById('emp-tbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">No employees found</div><div class="empty-sub">Add employees using the button above</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(e => {
+    const mods = e.modules.split(',');
+    const progPct = Math.min(e.topics_done * 2, 100);
+    return `<tr>
+      <td>
+        <div class="td-name">${e.name}</div>
+        <div style="font-size:11px;color:var(--text3)">${e.role||'—'}</div>
+      </td>
+      <td class="td-id">${e.emp_id}</td>
+      <td style="font-size:13px;color:var(--text2)">${e.department||'—'}</td>
+      <td><div class="td-mod">${mods.map(modTag).join('')}</div></td>
+      <td>
+        <div class="prog-cell">
+          <div class="prog-mini"><div class="prog-mini-fill" style="width:${progPct}%;background:${progPct>80?'var(--green)':progPct>40?'var(--amber)':'var(--blue)'}"></div></div>
+          <span style="font-size:12px;color:var(--text2)">${e.topics_done} topics</span>
+        </div>
+        ${e.has_cert ? '<span class="badge b-gold" style="font-size:10px;margin-top:4px;display:inline-flex">🎓 Certified</span>' : ''}
+      </td>
+      <td><span class="badge ${e.is_active?'b-green':'b-red'}">${e.is_active?'Active':'Inactive'}</span></td>
+      <td>
+        <div class="act-btns">
+          <button class="btn btn-blue btn-xs" onclick="viewEmployee('${e.emp_id}')">View</button>
+          <button class="btn btn-ghost btn-xs" onclick="openEditModal('${e.emp_id}')">Edit</button>
+          <button class="btn btn-amber btn-xs" onclick="openResetModal('${e.emp_id}','${e.name}')">Reset Pwd</button>
+          <button class="btn btn-red btn-xs" onclick="deactivateEmp('${e.emp_id}','${e.name}',${e.is_active})">${e.is_active?'Deactivate':'Activate'}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterEmployees() {
+  const search = document.getElementById('emp-search').value.toLowerCase();
+  const mod    = document.getElementById('emp-filter-mod').value;
+  const filtered = ALL_EMPLOYEES.filter(e =>
+    (!search || e.name.toLowerCase().includes(search) || e.emp_id.toLowerCase().includes(search)) &&
+    (!mod || e.modules.includes(mod))
+  );
+  renderEmployees(filtered);
+}
+
+async function viewEmployee(emp_id) {
+  VIEWING_EMP_ID = emp_id;
+  try {
+    const d = await api('/api/admin/employees/' + emp_id);
+    if (d.error) { toast(d.error,'err'); return; }
+
+    document.getElementById('detail-name').textContent = d.name;
+    document.getElementById('detail-sub').textContent = d.role + ' · ' + d.department + ' · ' + emp_id;
+
+    const modsDone = {};
+    d.progress.forEach(p => {
+      if (!modsDone[p.module]) modsDone[p.module] = 0;
+      if (p.completed) modsDone[p.module]++;
+    });
+
+    document.getElementById('detail-grid').innerHTML = `
+      <div class="detail-card">
+        <h3>Employee Info</h3>
+        <div class="detail-row"><div class="detail-lbl">Name</div><div class="detail-val">${d.name}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Employee ID</div><div class="detail-val" style="font-family:monospace">${d.emp_id}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Email</div><div class="detail-val">${d.email||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Department</div><div class="detail-val">${d.department||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Role</div><div class="detail-val">${d.role||'—'}</div></div>
+        <div class="detail-row"><div class="detail-lbl">Status</div><div class="detail-val"><span class="badge ${d.is_active?'b-green':'b-red'}">${d.is_active?'Active':'Inactive'}</span></div></div>
+        <div class="detail-row"><div class="detail-lbl">Joined</div><div class="detail-val">${fmtDate(d.created_at)}</div></div>
+      </div>
+      <div class="detail-card">
+        <h3>Training Stats</h3>
+        ${d.modules.split(',').map(m => {
+          const done = modsDone[m] || 0;
+          const qr = d.quizzes.filter(q => q.module === m && q.quiz_type === 'module');
+          const bestScore = qr.length ? Math.max(...qr.map(q => q.score)) : null;
+          return `<div class="detail-row">
+            <div class="detail-lbl">${m==='Administration'?'Admin':m}</div>
+            <div class="detail-val">${done} topics ${bestScore !== null ? '· Quiz: '+bestScore+'%' : ''}</div>
+          </div>`;
+        }).join('')}
+        <div class="detail-row"><div class="detail-lbl">Certificate</div><div class="detail-val">${d.certificate ? `<span class="badge b-gold">🎓 ${d.certificate.cert_id}</span>` : '—'}</div></div>
+      </div>`;
+
+    const grouped = {};
+    d.progress.forEach(p => {
+      if (!grouped[p.module]) grouped[p.module] = [];
+      grouped[p.module].push(p);
+    });
+
+    document.getElementById('detail-progress').innerHTML = Object.keys(grouped).map(mod => `
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">${mod}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${grouped[mod].map(p => `<span style="font-size:11px;padding:3px 8px;border-radius:10px;background:${p.completed?'rgba(16,185,129,.1)':'var(--bg3)'};color:${p.completed?'var(--green)':'var(--text3)'};border:1px solid ${p.completed?'rgba(16,185,129,.2)':'var(--bdr)'}">${p.completed?'✓ ':''} ${p.topic}</span>`).join('')}
+        </div>
+      </div>`).join('') || '<p style="font-size:13px;color:var(--text3)">No topics completed yet</p>';
+
+    showPanel('emp-detail', null);
+  } catch(e) { toast('Failed to load employee details','err'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  ADD / EDIT EMPLOYEE MODAL
+// ═══════════════════════════════════════════════════════
+function openAddModal() {
+  EDITING_ID = null;
+  document.getElementById('modal-title').textContent = 'Add New Employee';
+  document.getElementById('modal-submit-btn').textContent = 'Create Employee';
+  ['m-id','m-name','m-email','m-dept','m-role','m-pwd'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('input[name="mod-cb"]').forEach(cb => cb.checked = false);
+  document.getElementById('m-mod').value = '';
+  document.getElementById('m-id').disabled = false;
+  clearErr('modal-err');
+  openModal('add-modal');
+}
+
+function openEditModal(emp_id) {
+  EDITING_ID = emp_id;
+  const emp = ALL_EMPLOYEES.find(e => e.emp_id === emp_id);
+  if (!emp) return;
+  document.getElementById('modal-title').textContent = 'Edit Employee';
+  document.getElementById('modal-submit-btn').textContent = 'Save Changes';
+  document.getElementById('m-id').value = emp.emp_id;
+  document.getElementById('m-id').disabled = true;
+  document.getElementById('m-name').value = emp.name;
+  document.getElementById('m-email').value = emp.email || '';
+  document.getElementById('m-dept').value = emp.department || '';
+  document.getElementById('m-role').value = emp.role || '';
+  const empMods = emp.modules.split(',');
+  document.querySelectorAll('input[name="mod-cb"]').forEach(cb => {
+    cb.checked = empMods.includes(cb.value);
+  });
+  updateModHidden();
+  document.getElementById('m-pwd').value = '';
+  clearErr('modal-err');
+  openModal('add-modal');
+}
+
+function selectAllMods() {
+  document.querySelectorAll('input[name="mod-cb"]').forEach(cb => cb.checked = true);
+  updateModHidden();
+}
+function clearAllMods() {
+  document.querySelectorAll('input[name="mod-cb"]').forEach(cb => cb.checked = false);
+  updateModHidden();
+}
+function updateModHidden() {
+  const checked = [...document.querySelectorAll('input[name="mod-cb"]:checked')].map(cb => cb.value);
+  document.getElementById('m-mod').value = checked.join(',');
+}
+// Auto-update hidden field when any checkbox changes
+document.addEventListener('change', e => {
+  if (e.target.name === 'mod-cb') updateModHidden();
+});
+
+async function submitEmployee() {
+  clearErr('modal-err');
+  updateModHidden();
+  const body = {
+    emp_id:     document.getElementById('m-id').value.trim(),
+    name:       document.getElementById('m-name').value.trim(),
+    email:      document.getElementById('m-email').value.trim(),
+    department: document.getElementById('m-dept').value.trim(),
+    role:       document.getElementById('m-role').value.trim(),
+    modules:    document.getElementById('m-mod').value,
+    password:   document.getElementById('m-pwd').value.trim() || null
+  };
+
+  if (!body.name) { showErr('modal-err','Name is required'); return; }
+  if (!body.modules) { showErr('modal-err','Please select at least one module'); return; }
+
+  try {
+    let d;
+    if (EDITING_ID) {
+      d = await api('/api/admin/employees/' + EDITING_ID, { method:'PUT', body });
+    } else {
+      if (!body.emp_id) { showErr('modal-err','Employee ID is required'); return; }
+      d = await api('/api/admin/employees', { method:'POST', body });
+    }
+
+    if (d.error) { showErr('modal-err', d.error); return; }
+    toast(EDITING_ID ? 'Employee updated' : `Employee created. Default password: ${d.default_password}`, 'ok');
+    closeModal('add-modal');
+    loadEmployees();
+  } catch(e) { showErr('modal-err','Server error. Check connection.'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESET PASSWORD
+// ═══════════════════════════════════════════════════════
+function openResetModal(emp_id, name) {
+  RESET_EMP_ID = emp_id;
+  document.getElementById('reset-emp-name').textContent = name;
+  document.getElementById('reset-emp-id').textContent = emp_id;
+  document.getElementById('reset-pwd').value = '';
+  openModal('reset-modal');
+}
+
+async function submitReset() {
+  const pwd = document.getElementById('reset-pwd').value.trim();
+  try {
+    const d = await api('/api/admin/employees/' + RESET_EMP_ID + '/reset-password', {
+      method: 'POST', body: { password: pwd || null }
+    });
+    if (d.error) { toast(d.error,'err'); return; }
+    toast(`Password reset. New password: ${d.new_password}`, 'ok');
+    closeModal('reset-modal');
+  } catch(e) { toast('Server error','err'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  DEACTIVATE
+// ═══════════════════════════════════════════════════════
+async function deactivateEmp(emp_id, name, is_active) {
+  const action = is_active ? 'deactivate' : 'activate';
+  if (!confirm(`${action.charAt(0).toUpperCase()+action.slice(1)} ${name}?`)) return;
+  try {
+    if (is_active) {
+      await api('/api/admin/employees/' + emp_id, { method:'DELETE' });
+    } else {
+      await api('/api/admin/employees/' + emp_id, { method:'PUT', body: { is_active: 1 } });
+    }
+    toast(`Employee ${action}d`, 'ok');
+    loadEmployees();
+  } catch(e) { toast('Server error','err'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  BULK ADD
+// ═══════════════════════════════════════════════════════
+function openBulkModal() {
+  document.getElementById('bulk-csv').value = '';
+  document.getElementById('bulk-result').style.display = 'none';
+  openModal('bulk-modal');
+}
+
+async function submitBulk() {
+  const csv = document.getElementById('bulk-csv').value.trim();
+  if (!csv) { toast('Paste CSV data first','err'); return; }
+
+  const employees = csv.split('\n').filter(l => l.trim()).map(line => {
+    const [emp_id,name,email,department,role,modules] = line.split(',').map(s=>s.trim());
+    return { emp_id, name, email, department, role, modules: modules||'CRM' };
+  }).filter(e => e.emp_id && e.name);
+
+  if (!employees.length) { toast('No valid rows found','err'); return; }
+
+  try {
+    const d = await api('/api/admin/employees/bulk', { method:'POST', body: { employees } });
+    if (d.error) { toast(d.error,'err'); return; }
+    const created = d.results.filter(r=>r.created).length;
+    const skipped = d.results.length - created;
+    const resultEl = document.getElementById('bulk-result');
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `<div class="act-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="color:var(--green);font-weight:600">✓ ${created} employees created · ${skipped} skipped (duplicate IDs)</div>
+      <div style="font-size:11px;color:var(--text3)">Default passwords: [EmpID]@Metro</div>
+    </div>`;
+    loadEmployees();
+  } catch(e) { toast('Server error','err'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROGRESS
+// ═══════════════════════════════════════════════════════
+// Topic counts per module (approximate from Excel data)
+const MODULE_TOTALS = { CRM: 140, ELC: 79, Payroll: 85, Administration: 54, RERA: 14, SalesCRM: 17 };
+const MODULE_COLORS = { CRM:'#3b82f6', ELC:'#8b5cf6', Payroll:'#10b981', Administration:'#f59e0b', RERA:'#ef4444', SalesCRM:'#06b6d4' };
+const MODULE_LABELS = { CRM:'CRM Module', ELC:'Employee Life Cycle', Payroll:'Payroll Module', Administration:'Administration', RERA:'Legal & RERA Foundation', SalesCRM:'Sales to CRM Workflow' };
+
+async function loadProgress() {
+  try {
+    const d = await api('/api/admin/employees');
+    if (d.error) return;
+    ALL_EMPLOYEES = d.employees;
+    renderProgress(d.employees);
+  } catch(e) {}
+}
+
+function renderProgress(list) {
+  const el = document.getElementById('prog-cards');
+  if (!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3)">No employees found</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(e => {
+    const mods = e.modules.split(',');
+    const overallPct = Math.min(Math.round(e.topics_done / Math.max(mods.reduce((s,m) => s + (MODULE_TOTALS[m]||50), 0), 1) * 100), 100);
+    const qr = e.quizzes_passed;
+
+    const modBars = mods.map(m => {
+      const total = MODULE_TOTALS[m] || 50;
+      const done  = Math.min(e.topics_done, total);
+      const pct   = Math.min(Math.round(done / total * 100), 100);
+      return `<div class="mod-prog-row">
+        <div class="mod-prog-header">
+          <span class="mod-prog-name">${m === 'Administration' ? 'Admin' : m}</span>
+          <span class="mod-prog-count">${pct}%</span>
+        </div>
+        <div class="mod-prog-bar">
+          <div class="mod-prog-fill" style="width:${pct}%;background:${MODULE_COLORS[m]||'#64748b'}"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bdr)">
+      <div style="background:var(--surf);padding:16px 20px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,162,39,.12);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gold)">
+            ${e.name.split(' ').map(w=>w[0]).slice(0,2).join('')}
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600">${e.name}</div>
+            <div style="font-size:11px;color:var(--text3);font-family:monospace">${e.emp_id} · ${e.role||e.department||'—'}</div>
+          </div>
+          <div style="margin-left:auto">
+            ${e.has_cert ? '<span class="badge b-gold" style="font-size:10px">🎓 Certified</span>' : ''}
+            <span class="badge ${e.is_active ? 'b-green' : 'b-red'}" style="font-size:10px">${e.is_active ? 'Active' : 'Inactive'}</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="background:var(--bg3);border-radius:var(--r2);padding:8px 10px;text-align:center">
+            <div style="font-size:18px;font-weight:800;color:var(--blue)">${overallPct}%</div>
+            <div style="font-size:10px;color:var(--text3)">Overall</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:var(--r2);padding:8px 10px;text-align:center">
+            <div style="font-size:18px;font-weight:800;color:var(--green)">${e.topics_done}</div>
+            <div style="font-size:10px;color:var(--text3)">Topics done</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:var(--r2);padding:8px 10px;text-align:center">
+            <div style="font-size:18px;font-weight:800;color:var(--purple)">${qr}</div>
+            <div style="font-size:10px;color:var(--text3)">Quizzes</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text3)">Last active: ${fmtDate(e.last_active)}</div>
+      </div>
+      <div style="background:var(--surf);padding:16px 20px">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Module progress</div>
+        ${modBars}
+        <button class="btn btn-blue btn-xs" style="margin-top:12px" onclick="viewEmployee('${e.emp_id}')">View full detail →</button>
+      </div>
+    </div>`;
+  }).join('<div style="height:1px;background:var(--bdr);margin:0"></div>');
+}
+
+function filterProgress() {
+  const s = document.getElementById('prog-search').value.toLowerCase();
+  const filtered = ALL_EMPLOYEES.filter(e => !s || e.name.toLowerCase().includes(s) || e.emp_id.toLowerCase().includes(s));
+  renderProgress(filtered);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CERTIFICATES
+// ═══════════════════════════════════════════════════════
+async function loadCertificates() {
+  try {
+    const d = await api('/api/admin/employees');
+    if (d.error) return;
+    const certified = d.employees.filter(e => e.has_cert);
+    if (!certified.length) {
+      document.getElementById('cert-tbody').innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🎓</div><div class="empty-title">No certificates yet</div><div class="empty-sub">Certificates will appear here once employees complete their training</div></div></td></tr>`;
+      return;
+    }
+    document.getElementById('cert-tbody').innerHTML = certified.map(e => `<tr>
+      <td><div class="td-name">${e.name}</div><div class="td-id">${e.emp_id}</div></td>
+      <td><code style="font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px">${e.cert_id}</code></td>
+      <td><div class="td-mod">${e.modules.split(',').map(modTag).join('')}</div></td>
+      <td style="font-size:12px;color:var(--text2)">—</td>
+      <td style="font-size:12px;color:var(--text2)">${fmtDate(null)}</td>
+      <td><a href="${API}/api/certificate/verify/${e.cert_id}" target="_blank" style="color:var(--blue);font-size:12px">Verify ↗</a></td>
+    </tr>`).join('');
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════
+function loadSettings() {
+  document.getElementById('api-url-display').textContent = API;
+  document.getElementById('api-url-input').value = API;
+  checkApiStatus();
+}
+
+function saveApiUrl() {
+  const url = document.getElementById('api-url-input').value.trim().replace(/\/$/, '');
+  if (url) { API = url; localStorage.setItem('mg_api_url', url); toast('API URL saved', 'ok'); checkApiStatus(); }
+}
+
+async function checkApiStatus() {
+  try {
+    const r = await fetch(API + '/api/auth/verify', { headers: { Authorization: `Bearer ${TOKEN}` } });
+    const status = r.ok ? '🟢 Connected' : '🔴 Auth error';
+    ['api-status','api-status2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = status; el.style.color = r.ok ? 'var(--green)' : 'var(--red)'; }
+    });
+  } catch {
+    ['api-status','api-status2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = '🔴 Offline'; el.style.color = 'var(--red)'; }
+    });
+  }
+}
+
+async function changePassword() {
+  const old_password = document.getElementById('cp-old').value;
+  const new_password = document.getElementById('cp-new').value;
+  const confirm_pwd  = document.getElementById('cp-confirm').value;
+  if (new_password !== confirm_pwd) { toast('Passwords do not match','err'); return; }
+  if (new_password.length < 8) { toast('Password must be at least 8 characters','err'); return; }
+  try {
+    const d = await api('/api/admin/change-password', { method:'POST', body:{old_password,new_password} });
+    if (d.error) { toast(d.error,'err'); return; }
+    toast('Password changed successfully', 'ok');
+    ['cp-old','cp-new','cp-confirm'].forEach(id => document.getElementById(id).value = '');
+  } catch(e) { toast('Server error','err'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  AUTO-LOGIN (if token stored)
+// ═══════════════════════════════════════════════════════
+// ── LIVE SSE CONNECTION ──────────────────────────────────────
+let sseSource = null;
+
+// ── LIVE FEED STATE ─────────────────────────────────────────
+const LIVE_EVENTS = [];
+let   VIEWING_EMP_ID = null;   // track which employee detail is open
+
+function addLiveFeedItem(icon, iconClass, name, action, time) {
+  const item = { icon, iconClass, name, action, time: time || new Date().toISOString() };
+  LIVE_EVENTS.unshift(item);
+  if (LIVE_EVENTS.length > 50) LIVE_EVENTS.pop();
+  renderLiveFeed();
+}
+
+function renderLiveFeed() {
+  const el = document.getElementById('live-feed');
+  if (!el) return;
+  if (!LIVE_EVENTS.length) {
+    el.innerHTML = '<div class="lf-empty">Waiting for trainee activity…</div>';
+    return;
+  }
+  el.innerHTML = LIVE_EVENTS.map(ev => `
+    <div class="lf-item">
+      <div class="lf-icon ${ev.iconClass}">${ev.icon}</div>
+      <div class="lf-body">
+        <div class="lf-name">${ev.name}</div>
+        <div class="lf-action">${ev.action}</div>
+      </div>
+      <div class="lf-time">${fmtTime(ev.time)}</div>
+    </div>`).join('');
+}
+
+function silentRefreshAll() {
+  loadDashboard();
+  loadEmployees();
+  if (document.getElementById('p-progress').classList.contains('on')) loadProgress();
+  // Auto-refresh employee detail if it's open and matches this event
+}
+
+function silentRefreshIfViewing(emp_id) {
+  if (VIEWING_EMP_ID && VIEWING_EMP_ID === emp_id) {
+    viewEmployee(emp_id);   // re-load their detail page in place
+  }
+}
+
+function startLiveUpdates() {
+  if (sseSource) sseSource.close();
+  sseSource = new EventSource(API + '/api/admin/live?token=' + TOKEN);
+
+  sseSource.addEventListener('connected', () => {
+    const badge = document.getElementById('live-badge');
+    if (badge) badge.style.display = 'inline-flex';
+  });
+
+  sseSource.addEventListener('progress', e => {
+    const d = JSON.parse(e.data);
+    // 1. Add to live feed
+    addLiveFeedItem('📚', 'topic', d.name, `Completed "${d.topic}" in ${d.module}`, d.time);
+    // 2. Toast
+    toast(`📚 ${d.name} — "${d.topic}"`, 'ok');
+    // 3. Refresh tables
+    silentRefreshAll();
+    // 4. Refresh detail page if viewing this employee
+    silentRefreshIfViewing(d.emp_id);
+  });
+
+  sseSource.addEventListener('quiz', e => {
+    const d = JSON.parse(e.data);
+    const pass = d.passed;
+    addLiveFeedItem(
+      pass ? '✅' : '❌',
+      pass ? 'quiz-pass' : 'quiz-fail',
+      d.name,
+      `${pass ? 'Passed' : 'Failed'} ${d.module} quiz — ${d.score}%`,
+      d.time
+    );
+    toast(`🧠 ${d.name} ${pass ? 'passed' : 'failed'} ${d.module} quiz — ${d.score}%`, pass ? 'ok' : 'err');
+    silentRefreshAll();
+    silentRefreshIfViewing(d.emp_id);
+  });
+
+  sseSource.addEventListener('certificate', e => {
+    const d = JSON.parse(e.data);
+    addLiveFeedItem('🎓', 'cert', d.name, `Earned certificate — ${d.cert_id}`, d.time);
+    toast(`🎓 ${d.name} completed the full course!`, 'ok');
+    silentRefreshAll();
+    if (document.getElementById('p-certificates').classList.contains('on')) loadCertificates();
+    silentRefreshIfViewing(d.emp_id);
+  });
+
+  sseSource.onerror = () => {
+    const badge = document.getElementById('live-badge');
+    if (badge) badge.style.display = 'none';
+    setTimeout(() => { if (TOKEN) startLiveUpdates(); }, 5000);
+  };
+}
+
+window.onload = async () => {
+  const saved = localStorage.getItem('mg_admin_token');
+  if (saved) {
+    TOKEN = saved;
+    try {
+      const d = await api('/api/auth/verify');
+      if (d.valid && d.user.isAdmin) {
+        document.getElementById('admin-name').textContent = d.user.name || 'Admin';
+        showScreen('s-app');
+        loadDashboard();
+        loadEmployees();
+        checkApiStatus();
+        startLiveUpdates();
+        return;
+      }
+    } catch(e) {}
+    localStorage.removeItem('mg_admin_token');
+    TOKEN = '';
+  }
+};
+</script>
+</body>
+</html>
