@@ -1,0 +1,9 @@
+# Ignore the bulky node_modules folder
+node_modules/
+
+# Ignore your private environment variables
+.env
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
