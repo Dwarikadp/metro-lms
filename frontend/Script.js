@@ -1,6 +1,7 @@
 ﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  FULL COURSE DATA
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+const BASE_API_URL = "https://metro-lms-api.onrender.com";
 const CD = {
   CRM:[
     {t:'SETUP',c:'Project',n:'Hierarchy Type',o:'Define levels (e.g., Phase, Block, Tower) to represent the physical layout of a real estate project.'},
@@ -256,7 +257,7 @@ async function flushSyncQueue() {
   const remaining = [];
   for (const item of q) {
     try {
-      const res = await fetch(item.path, {
+      const res = await fetch(BASE_API_URL + item.path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('mg_token') },
         body: JSON.stringify(item.body)
@@ -279,7 +280,7 @@ async function syncQuiz(module, score, passed) {
 }
 
 async function syncCertificate(modules, scores) {
-  const res = await fetch('/api/me/certificate', {
+ const res = await fetch(BASE_API_URL + '/api/me/certificate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('mg_token') },
     body: JSON.stringify({ modules, scores })
@@ -753,7 +754,7 @@ window.onload = () => {
   const backendUser = JSON.parse(userData);
 
   // Verify token is still valid with backend
-  fetch('/api/auth/verify', {
+  fetch(BASE_API_URL + '/api/auth/verify', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
   .then(r => r.json())
@@ -788,7 +789,7 @@ window.onload = () => {
 async function loadBackendProgress() {
   try {
     const token = localStorage.getItem('mg_token');
-    const res   = await fetch('/api/me/progress', {
+    const res = await fetch(BASE_API_URL + '/api/me/progress', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
 
