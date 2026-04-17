@@ -6,7 +6,8 @@ This project now uses PostgreSQL through Supabase for all persisted data.
 
 - Create a new project in Supabase.
 - Open `Project Settings -> Database`.
-- Copy the `Connection string` for the direct Postgres connection.
+- If you deploy on Render, copy the `Connection string` for the **session pooler** connection.
+- If your host supports IPv6, you can use the direct connection instead.
 
 ## 2. Set environment variables
 
@@ -20,11 +21,12 @@ Use these values on your backend host:
 
 If your platform gives you a separate production database URL, use that as `DATABASE_URL`.
 If your database password contains `@`, encode it as `%40` inside the URL.
+Render usually works best with the session pooler because it avoids IPv6 reachability issues.
 
-Example direct connection:
+Example Render-safe pooler connection:
 
 ```env
-DATABASE_URL=postgresql://postgres:Dwarika%400307@db.svlnpcxylpyfjghujxae.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres.svlnpcxylpyfjghujxae:Dwarika%400307@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
 ```
 
 ## 3. Apply the schema
