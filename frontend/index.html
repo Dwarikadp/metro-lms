@@ -40,31 +40,6 @@
   .brand { font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #c9a227; text-transform: uppercase; margin-bottom: 12px; }
   .title { font-size: 26px; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; letter-spacing: -0.5px; }
   .subtitle { font-size: 13px; color: #94a3b8; line-height: 1.5; }
-  .seg {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 20px;
-    padding: 6px;
-    background: #0f1628;
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 14px;
-  }
-  .seg button {
-    border: none;
-    background: transparent;
-    color: #94a3b8;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .seg button.active {
-    background: linear-gradient(135deg, #c9a227, #a07d1a);
-    color: #000;
-  }
   .field { margin-bottom: 18px; }
   .field label { display: block; font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.6px; }
   .field input {
@@ -127,7 +102,6 @@
   .info-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #475569; margin-bottom: 8px; }
   .info-dot { width: 6px; height: 6px; border-radius: 50%; background: #c9a227; flex-shrink: 0; }
   .muted { color: #94a3b8; font-size: 12px; line-height: 1.5; margin-top: 14px; }
-  .hide { display: none; }
 </style>
 </head>
 <body>
@@ -135,59 +109,39 @@
   <div class="header">
     <div class="brand">Metro Ignite</div>
     <div class="title">Single Sign In</div>
-    <div class="subtitle">Use one login page for employees and admins. Your Supabase data stays separate behind the scenes.</div>
-  </div>
-  <div class="seg">
-    <button id="seg-employee" class="active" type="button" onclick="setMode('employee')">Employee</button>
-    <button id="seg-admin" type="button" onclick="setMode('admin')">Admin</button>
+    <div class="subtitle">Use one login page for employees and admins. The system will detect the account type automatically.</div>
   </div>
   <div class="error" id="err"></div>
   <div class="field">
-    <label id="user-label">Employee ID</label>
-    <input type="text" id="user-id" placeholder="e.g. EMP001" autocomplete="username" autofocus/>
+    <label>Employee ID or Admin Username</label>
+    <input type="text" id="user-id" placeholder="e.g. EMP001 or admin" autocomplete="username" autofocus/>
   </div>
   <div class="field">
     <label>Password</label>
     <input type="password" id="user-pwd" placeholder="Enter your password" autocomplete="current-password"/>
   </div>
   <button class="btn" id="login-btn" onclick="doLogin()">
-    <span id="btn-text">Access My Training →</span>
+    <span id="btn-text">Sign In →</span>
     <div class="spinner" id="spinner"></div>
   </button>
   <hr class="divider">
-  <div id="employee-help">
+  <div>
     <div class="info-row"><div class="info-dot"></div>Default password: your Employee ID + @Metro</div>
     <div class="info-row"><div class="info-dot"></div>Example: EMP001 → EMP001@Metro</div>
-  </div>
-  <div id="admin-help" class="hide">
-    <div class="info-row"><div class="info-dot"></div>Admin username is usually <strong>admin</strong>.</div>
-    <div class="info-row"><div class="info-dot"></div>Use the admin password set in your Render environment variables.</div>
+    <div class="info-row"><div class="info-dot"></div>Admin users use the admin password set in Render.</div>
   </div>
   <div class="muted">If you already have a token, the app will take you straight to the right portal.</div>
 </div>
 
 <script>
   const API = localStorage.getItem('mg_api_url') || (window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'http://localhost:3001');
-  let MODE = 'employee';
 
   function showErr(msg) { const e = document.getElementById('err'); e.textContent = msg; e.classList.add('show'); }
   function hideErr() { document.getElementById('err').classList.remove('show'); }
   function setLoad(on) {
     document.getElementById('login-btn').disabled = on;
-    document.getElementById('btn-text').textContent = on ? 'Verifying…' : (MODE === 'admin' ? 'Enter Admin Panel →' : 'Access My Training →');
+    document.getElementById('btn-text').textContent = on ? 'Verifying…' : 'Sign In →';
     on ? document.getElementById('spinner').classList.add('show') : document.getElementById('spinner').classList.remove('show');
-  }
-
-  function setMode(mode) {
-    MODE = mode;
-    document.getElementById('seg-employee').classList.toggle('active', mode === 'employee');
-    document.getElementById('seg-admin').classList.toggle('active', mode === 'admin');
-    document.getElementById('user-label').textContent = mode === 'admin' ? 'Admin Username' : 'Employee ID';
-    document.getElementById('user-id').placeholder = mode === 'admin' ? 'admin' : 'e.g. EMP001';
-    document.getElementById('btn-text').textContent = mode === 'admin' ? 'Enter Admin Panel →' : 'Access My Training →';
-    document.getElementById('employee-help').classList.toggle('hide', mode === 'admin');
-    document.getElementById('admin-help').classList.toggle('hide', mode !== 'admin');
-    document.getElementById('user-id').focus();
   }
 
   async function doLogin() {
@@ -195,7 +149,7 @@
     const user_id = document.getElementById('user-id').value.trim();
     const password = document.getElementById('user-pwd').value;
     if (!user_id) {
-      showErr(MODE === 'admin' ? 'Please enter your admin username.' : 'Please enter your Employee ID.');
+      showErr('Please enter your Employee ID or admin username.');
       return;
     }
     if (!password) {
@@ -205,31 +159,36 @@
 
     setLoad(true);
     try {
-      const endpoint = MODE === 'admin' ? '/api/auth/admin-login' : '/api/auth/login';
-      const payload = MODE === 'admin'
-        ? { username: user_id.trim() }
-        : { emp_id: user_id.trim().toUpperCase() };
-      payload.password = password;
-
-      const res = await fetch(API + endpoint, {
+      const employeeRes = await fetch(API + '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ emp_id: user_id.trim().toUpperCase(), password })
       });
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        showErr(data.error || 'Login failed. Please try again.');
-        return;
-      }
 
-      if (MODE === 'admin') {
-        localStorage.setItem('mg_admin_token', data.token);
-        window.location.href = '/admin';
-      } else {
+      if (employeeRes.ok) {
+        const data = await employeeRes.json();
+        if (data.error) throw new Error(data.error);
         localStorage.setItem('mg_token', data.token);
         localStorage.setItem('mg_user', JSON.stringify(data.user));
         window.location.href = '/app';
+        return;
       }
+
+      const employeeData = await employeeRes.json().catch(() => ({}));
+      const adminRes = await fetch(API + '/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user_id.trim(), password })
+      });
+      const adminData = await adminRes.json().catch(() => ({}));
+
+      if (adminRes.ok && !adminData.error) {
+        localStorage.setItem('mg_admin_token', adminData.token);
+        window.location.href = '/admin';
+        return;
+      }
+
+      showErr(employeeData.error || adminData.error || 'Login failed. Please try again.');
     } catch (e) {
       showErr('Cannot connect to server. Make sure the backend is running.');
     } finally {
@@ -255,8 +214,6 @@
       .then(d => { if (d.valid && d.user.isAdmin) window.location.href = '/admin'; })
       .catch(() => localStorage.removeItem('mg_admin_token'));
   }
-
-  setMode('employee');
 </script>
 </body>
 </html>
