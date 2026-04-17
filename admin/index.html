@@ -213,6 +213,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .lf-empty{font-size:13px;color:var(--text3);text-align:center;padding:20px 0}
 .lf-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.skeleton{position:relative;overflow:hidden;background:rgba(148,163,184,.08);border-radius:8px;min-height:14px}
+.skeleton::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:shimmer 1.25s infinite}
+@keyframes shimmer{100%{transform:translateX(100%)}}
 
 /* ── MODULE PROGRESS BARS ── */
 .mod-prog-row{margin-bottom:10px}
@@ -535,7 +538,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 // ═══════════════════════════════════════════════════════
 //  CONFIG & STATE
 // ═══════════════════════════════════════════════════════
-let API = localStorage.getItem('mg_api_url') || 'https://metro-lms-api.onrender.com';
+let API = localStorage.getItem('mg_api_url') || (window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'http://localhost:3001');
 let TOKEN = '';
 let ALL_EMPLOYEES = [];
 let EDITING_ID = null;
@@ -585,6 +588,43 @@ function clearErr(id) {
 
 function openModal(id) { document.getElementById(id).classList.add('on'); }
 function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+function employeeSkeletonRows(count = 5) {
+  return Array.from({ length: count }, () => `
+    <tr>
+      <td><div class="skeleton" style="width:120px;height:14px;margin-bottom:6px"></div><div class="skeleton" style="width:80px;height:10px"></div></td>
+      <td><div class="skeleton" style="width:90px;height:12px"></div></td>
+      <td><div class="skeleton" style="width:100px;height:12px"></div></td>
+      <td><div class="skeleton" style="width:180px;height:16px"></div></td>
+      <td><div class="skeleton" style="width:120px;height:12px"></div></td>
+      <td><div class="skeleton" style="width:70px;height:18px"></div></td>
+      <td><div class="skeleton" style="width:230px;height:30px"></div></td>
+    </tr>
+  `).join('');
+}
+
+function progressSkeletonCards(count = 4) {
+  return Array.from({ length: count }, () => `
+    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;margin-bottom:14px">
+      <div class="skeleton" style="width:160px;height:16px;margin-bottom:10px"></div>
+      <div class="skeleton" style="width:100%;height:8px;margin-bottom:10px"></div>
+      <div class="skeleton" style="width:65%;height:12px"></div>
+    </div>
+  `).join('');
+}
+
+function certificateSkeletonRows(count = 4) {
+  return Array.from({ length: count }, () => `
+    <tr>
+      <td><div class="skeleton" style="width:120px;height:14px;margin-bottom:6px"></div><div class="skeleton" style="width:75px;height:10px"></div></td>
+      <td><div class="skeleton" style="width:150px;height:12px"></div></td>
+      <td><div class="skeleton" style="width:180px;height:16px"></div></td>
+      <td><div class="skeleton" style="width:70px;height:12px"></div></td>
+      <td><div class="skeleton" style="width:90px;height:12px"></div></td>
+      <td><div class="skeleton" style="width:60px;height:12px"></div></td>
+    </tr>
+  `).join('');
+}
 
 // ═══════════════════════════════════════════════════════
 //  LOGIN
@@ -693,6 +733,7 @@ async function loadDashboard() {
 // ═══════════════════════════════════════════════════════
 async function loadEmployees() {
   try {
+    document.getElementById('emp-tbody').innerHTML = employeeSkeletonRows();
     const d = await api('/api/admin/employees');
     if (d.error) { toast(d.error, 'err'); return; }
     ALL_EMPLOYEES = d.employees;
@@ -978,6 +1019,7 @@ const MODULE_LABELS = { CRM:'CRM Module', ELC:'Employee Life Cycle', Payroll:'Pa
 
 async function loadProgress() {
   try {
+    document.getElementById('prog-list').innerHTML = progressSkeletonCards();
     const d = await api('/api/admin/employees');
     if (d.error) return;
     ALL_EMPLOYEES = d.employees;
@@ -1063,6 +1105,7 @@ function filterProgress() {
 // ═══════════════════════════════════════════════════════
 async function loadCertificates() {
   try {
+    document.getElementById('cert-tbody').innerHTML = certificateSkeletonRows();
     const d = await api('/api/admin/employees');
     if (d.error) return;
     const certified = d.employees.filter(e => e.has_cert);
@@ -1075,7 +1118,7 @@ async function loadCertificates() {
       <td><code style="font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px">${e.cert_id}</code></td>
       <td><div class="td-mod">${e.modules.split(',').map(modTag).join('')}</div></td>
       <td style="font-size:12px;color:var(--text2)">—</td>
-      <td style="font-size:12px;color:var(--text2)">${fmtDate(null)}</td>
+      <td style="font-size:12px;color:var(--text2)">${fmtDate(e.cert_issued_at)}</td>
       <td><a href="${API}/api/certificate/verify/${e.cert_id}" target="_blank" style="color:var(--blue);font-size:12px">Verify ↗</a></td>
     </tr>`).join('');
   } catch(e) {}

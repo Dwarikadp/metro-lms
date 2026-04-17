@@ -84,7 +84,7 @@
   <div class="info-row"><div class="info-dot"></div>Example: ID = EMP001 → Password = EMP001@Metro</div>
 </div>
 <script>
-  const API = 'https://metro-lms-api.onrender.com';
+  const API = localStorage.getItem('mg_api_url') || (window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'http://localhost:3001');
   function showErr(msg){ const e=document.getElementById('err'); e.textContent=msg; e.classList.add('show'); }
   function hideErr(){ document.getElementById('err').classList.remove('show'); }
   function setLoad(on){
@@ -112,7 +112,7 @@
   }
   document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   const t=localStorage.getItem('mg_token');
-  if(t){fetch('/api/auth/verify',{headers:{'Authorization':'Bearer '+t}}).then(r=>r.json()).then(d=>{if(d.valid&&!d.user.isAdmin)window.location.href='/app';}).catch(()=>localStorage.removeItem('mg_token'));}
+  if(t){fetch(API+'/api/auth/verify',{headers:{'Authorization':'Bearer '+t}}).then(r=>r.json()).then(d=>{if(d.valid&&!d.user.isAdmin)window.location.href='/app';}).catch(()=>localStorage.removeItem('mg_token'));}
 </script>
 </body>
 </html>

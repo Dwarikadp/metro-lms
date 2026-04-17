@@ -324,10 +324,25 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
 .animate-in{animation:fadeIn 0.3s ease forwards}
 .pulse{animation:pulse 2s ease-in-out infinite}
+.skeleton{position:relative;overflow:hidden;background:rgba(148,163,184,0.08);border-radius:8px;min-height:14px}
+.skeleton::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);animation:shimmer 1.35s infinite}
+@keyframes shimmer{100%{transform:translateX(100%)}}
 
 /* Responsive */
 @media(max-width:960px){.learn-layout{grid-template-columns:1fr}.sidebar{width:240px}}
 @media(max-width:700px){.app-body{flex-direction:column}.sidebar{width:100%;max-height:220px}.main{padding:16px}.grid4{grid-template-columns:1fr 1fr}}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body{background:#fff!important}
+  #screen-login,#screen-app,.modal-overlay{display:none!important}
+  #screen-cert{display:flex!important;background:#fff!important;padding:0!important;min-height:auto!important}
+  .cert-outer{box-shadow:none!important;border:2px solid #c9a227!important;background:#fff!important}
+  .cert-inner{background:#fff!important}
+  .cert-inner::before,.cert-inner::after{display:none!important}
+  .cert-logo{filter:none!important}
+  .cert-title{-webkit-text-fill-color:#c9a227!important;background:none!important;color:#c9a227!important}
+  .cert-actions{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -389,7 +404,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
     <div class="cert-actions">
       <button class="btn btn-ghost" onclick="showApp()">← Back</button>
-      <button class="btn btn-gold" onclick="window.print()">🖨 Print Certificate</button>
+      <button class="btn btn-gold" onclick="printCertificate()">🖨 Print Certificate</button>
     </div>
   </div>
 </div>
@@ -1140,19 +1155,22 @@ let S = {
   user: null, modules: [],
   done: {},       // 'CRM::Hierarchy Type' => true  (quiz passed)
   quizR: {},      // 'CRM' => {passed,score}
+  certId: null,
   curMod: null, curCat: null, curView: 'dash'
 };
 
-function save() { try { localStorage.setItem('mg_fv', JSON.stringify({user:S.user,modules:S.modules,done:S.done,quizR:S.quizR})); } catch(e){} }
+function save() { try { localStorage.setItem('mg_fv', JSON.stringify({user:S.user,modules:S.modules,done:S.done,quizR:S.quizR,certId:S.certId})); } catch(e){} }
 
 // ── BACKEND API SYNC ────────────────────────────────────────
 const API_TOKEN = localStorage.getItem('mg_token') || '';
 const API_USER  = JSON.parse(localStorage.getItem('mg_user') || 'null');
 
+const API_BASE = localStorage.getItem('mg_api_url') || (window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'http://localhost:3001');
+
 async function apiPost(path, body, retries = 2) {
   for (let i = 0; i <= retries; i++) {
     try {
-      const res = await fetch(path, {
+      const res = await fetch(API_BASE + path, {
         method:  'POST',
         headers: {
           'Content-Type':  'application/json',
@@ -1186,7 +1204,7 @@ async function flushSyncQueue() {
   const remaining = [];
   for (const item of q) {
     try {
-      const res = await fetch(item.path, {
+      const res = await fetch(API_BASE + item.path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('mg_token') },
         body: JSON.stringify(item.body)
@@ -1209,17 +1227,22 @@ async function syncQuiz(module, score, passed) {
 }
 
 async function syncCertificate(modules, scores) {
-  const res = await fetch('/api/me/certificate', {
+  const res = await fetch(API_BASE + '/api/me/certificate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('mg_token') },
     body: JSON.stringify({ modules, scores })
   });
-  return res.ok ? await res.json() : null;
+  const data = res.ok ? await res.json() : null;
+  if (data?.certificate?.cert_id) {
+    S.certId = data.certificate.cert_id;
+    save();
+  }
+  return data;
 }
 function load() {
   try {
     const d = JSON.parse(localStorage.getItem('mg_fv')||'{}');
-    if(d.user){S.user=d.user;S.modules=d.modules||[];S.done=d.done||{};S.quizR=d.quizR||{};return true;}
+    if(d.user){S.user=d.user;S.modules=d.modules||[];S.done=d.done||{};S.quizR=d.quizR||{};S.certId=d.certId||null;return true;}
   } catch(e){}
   return false;
 }
@@ -2169,15 +2192,15 @@ function renderModQuiz(){
 function mdqSel(oi){ if(MdQ.answered)return; MdQ.ans[MdQ.idx]=oi; renderModQuiz(); }
 function mdqSubmit(){ MdQ.answered=true; if(MdQ.ans[MdQ.idx]===MdQ.qs[MdQ.idx].correct)MdQ.score++; renderModQuiz(); }
 function mdqNext(){ MdQ.idx++; MdQ.answered=false; renderModQuiz(); }
-function mdqFinish(){
+async function mdqFinish(){
   const p=Math.round(MdQ.score/MdQ.qs.length*100), pass=p>=80, m=MdQ.mod;
   S.quizR[m]={passed:pass,score:p,date:new Date().toLocaleDateString()}; save();
-  syncQuiz(m, p, pass);
+  await syncQuiz(m, p, pass);
   if(pass && allDone()) {
     const mods = S.modules;
     const scores = {};
     mods.forEach(mod => { scores[mod] = S.quizR[mod]?.score || 0; });
-    syncCertificate(mods, scores);
+    await syncCertificate(mods, scores);
   }
   const h=`<div class="animate-in" style="padding:20px 0">
     <div class="result-card ${pass?'pass-card':'fail-card'}">
@@ -2213,8 +2236,22 @@ function showCert(){
   document.getElementById('cert-mods').innerHTML=S.modules.map(m=>`<span class="cert-mod">${MM[m].icon} ${MM[m].label} · ${S.quizR[m]?.score||0}%</span>`).join('');
   const today=new Date().toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});
   document.getElementById('cert-date').textContent=today;
-  const cid='MG-FV-'+u.id.toUpperCase()+'-'+Date.now().toString(36).toUpperCase().slice(-6);
+  const cid = S.certId || ('MG-FV-'+u.id.toUpperCase()+'-'+Date.now().toString(36).toUpperCase().slice(-6));
+  S.certId = cid;
+  save();
   document.getElementById('cert-id').innerHTML='Certificate ID<br>'+cid+'<br>metro-farvision.com';
+}
+
+async function printCertificate() {
+  const btn = document.querySelector('.cert-actions .btn-gold');
+  if (btn) btn.disabled = true;
+  try {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    window.print();
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2239,7 +2276,7 @@ window.onload = () => {
   const backendUser = JSON.parse(userData);
 
   // Verify token is still valid with backend
-  fetch('/api/auth/verify', {
+  fetch(API_BASE + '/api/auth/verify', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
   .then(r => r.json())
@@ -2272,7 +2309,7 @@ window.onload = () => {
 async function loadBackendProgress() {
   try {
     const token = localStorage.getItem('mg_token');
-    const res   = await fetch('/api/me/progress', {
+    const res   = await fetch(API_BASE + '/api/me/progress', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
 
