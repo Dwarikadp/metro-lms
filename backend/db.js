@@ -8,6 +8,21 @@ if (!connectionString) {
   console.warn('DATABASE_URL or SUPABASE_DB_URL is not set. The backend will not start until a Postgres database is configured.');
 }
 
+function validateConnectionString(value) {
+  if (!value) return;
+  try {
+    const url = new URL(value);
+    const host = url.hostname || '';
+    if (!host.includes('supabase.co') && host !== 'localhost') {
+      console.warn(`DATABASE_URL points to "${host}". On Render this usually means the env var value is malformed or incomplete.`);
+    }
+  } catch (error) {
+    console.warn('DATABASE_URL is not a valid URL. Check that it starts with postgresql:// and contains the full Supabase host.');
+  }
+}
+
+validateConnectionString(connectionString);
+
 const pool = new Pool({
   connectionString,
   ssl: process.env.NODE_ENV === 'production' || process.env.SUPABASE_DB_URL
