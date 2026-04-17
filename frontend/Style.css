@@ -498,9 +498,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     transition:none !important;
   }
 
-  body {
-    background:white !important;
-  }
+   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
   .screen#screen-cert {
     display:flex !important;
@@ -511,7 +509,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   .cert-outer {
     box-shadow:none !important;
     border:2px solid #c9a227 !important;
-    margin:0 !important;
   }
 
   .cert-inner {
@@ -534,11 +531,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     display:block;
     margin-bottom:18px !important;
     line-height:1.6 !important;
-    color:#333 !important;
+    color: #c9a227 !important;
+    letter-spacing: 3px;
   }
 
   .cert-title {
     display:block;
+    font-size: 36px !important;
     margin-top:10px !important;
     margin-bottom:24px !important;
     line-height:1.5 !important;
@@ -548,13 +547,113 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   }
 
   .cert-name {
-    color:#333 !important;
+    color: #1a1a2e !important;
     line-height:1.4 !important;
   }
 
   .cert-logo {
     filter:none !important;
   }
+}
+/* ── SKELETON LOADERS ── */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--surface2) 50%,
+    var(--surface) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--r2);
+}
+
+.skeleton-text { height: 14px; margin-bottom: 8px; }
+.skeleton-title { height: 22px; margin-bottom: 12px; width: 60%; }
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+/* ── GLASSMORPHISM — topbar & sidebar ── */
+.topbar {
+  background: rgba(17, 24, 39, 0.75) !important;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+.sidebar {
+  background: rgba(17, 24, 39, 0.6) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── MICRO-INTERACTIONS ── */
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Ripple effect on buttons */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn:active::after { opacity: 1; }
+.btn:active { transform: scale(0.97) !important; }
+
+/* Card hover lift */
+.stat-card, .tbl-wrap, .mod-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border-color: var(--bdr2);
+}
+
+/* Nav item smooth highlight */
+.nav-item {
+  transition: background 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
+}
+.nav-item:hover { padding-left: 16px !important; }
+.nav-item.active { padding-left: 16px; }
+
+/* Topic card left-bar animation */
+.topic-card { transition: border-color 0.2s, transform 0.15s; }
+.topic-card:hover { transform: translateX(3px); }
+
+/* ── SMOOTH PAGE TRANSITIONS ── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: pageIn 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+/* ── PROGRESS BAR GLOW ── */
+.prog-bar-fill {
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.5);
+}
+
+/* ── INPUT FOCUS GLOW ── */
+.fg input:focus, .search-inp:focus {
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15), 0 0 12px rgba(201, 162, 39, 0.08) !important;
 }
 
 

@@ -193,25 +193,13 @@ app.get('/api/certificate/verify/:cert_id', (req, res) => {
 // ═══════════════════════════════════════════════════════
 
 // Get all employees
-app.get('/api/admin/employees', adminMiddleware, (req, res) => {
-  const employees = db.prepare(`SELECT * FROM employees ORDER BY created_at DESC`).all();
-  // Add progress stats to each
-  const result = employees.map(emp => {
-    const done   = db.prepare('SELECT COUNT(*) as c FROM progress WHERE emp_id = ? AND completed = 1').get(emp.emp_id);
-    const passed = db.prepare('SELECT COUNT(*) as c FROM quiz_results WHERE emp_id = ? AND passed = 1').get(emp.emp_id);
-    const cert   = db.prepare('SELECT cert_id FROM certificates WHERE emp_id = ?').get(emp.emp_id);
-    const last   = db.prepare('SELECT completed_at FROM progress WHERE emp_id = ? ORDER BY completed_at DESC LIMIT 1').get(emp.emp_id);
-    return {
-      ...emp,
-      password: undefined,
-      topics_done:   done.c,
-      quizzes_passed: passed.c,
-      has_cert:       !!cert,
-      cert_id:        cert?.cert_id || null,
-      last_active:    last?.completed_at || null
-    };
-  });
-  res.json({ employees: result });
+app.get('/api/admin/employees', adminMiddleware, async (req, res) => {
+  try {
+    const employees = await db.query('SELECT * FROM employees ORDER BY created_at DESC');
+    res.json({ employees });
+  } catch(e) {
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 // Get single employee detail
