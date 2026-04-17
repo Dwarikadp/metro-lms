@@ -19,6 +19,13 @@ Use these values on your backend host:
 - `PORT`
 
 If your platform gives you a separate production database URL, use that as `DATABASE_URL`.
+If your database password contains `@`, encode it as `%40` inside the URL.
+
+Example direct connection:
+
+```env
+DATABASE_URL=postgresql://postgres:Dwarika%400307@db.svlnpcxylpyfjghujxae.supabase.co:5432/postgres
+```
 
 ## 3. Apply the schema
 
