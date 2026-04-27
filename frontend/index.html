@@ -37,7 +37,25 @@
     background: linear-gradient(90deg, transparent, #c9a227, transparent);
   }
   .header { text-align: center; margin-bottom: 28px; }
-  .brand { font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #c9a227; text-transform: uppercase; margin-bottom: 12px; }
+  .brand-wrap { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom: 12px; }
+  .brand-mark {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #c9a227, #8b1a1a);
+    color: #000;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 25px rgba(201,162,39,0.2);
+    flex-shrink: 0;
+  }
+  .brand-text { text-align: left; }
+  .brand { font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #c9a227; text-transform: uppercase; }
+  .brand-name { font-size: 20px; font-weight: 800; color: #f1f5f9; margin-top: 3px; }
   .title { font-size: 26px; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; letter-spacing: -0.5px; }
   .subtitle { font-size: 13px; color: #94a3b8; line-height: 1.5; }
   .field { margin-bottom: 18px; }
@@ -107,14 +125,20 @@
 <body>
 <div class="card">
   <div class="header">
-    <div class="brand">Metro Ignite</div>
+    <div class="brand-wrap">
+      <div class="brand-mark">MG</div>
+      <div class="brand-text">
+        <div class="brand">Metro Group</div>
+        <div class="brand-name">Login Portal</div>
+      </div>
+    </div>
     <div class="title">Single Sign In</div>
     <div class="subtitle">Use one login page for employees and admins. The system will detect the account type automatically.</div>
   </div>
   <div class="error" id="err"></div>
   <div class="field">
-    <label>Employee ID or Admin Username</label>
-    <input type="text" id="user-id" placeholder="e.g. EMP001 or admin" autocomplete="username" autofocus/>
+    <label>ID</label>
+    <input type="text" id="user-id" placeholder="Enter your Id" autocomplete="username" autofocus/>
   </div>
   <div class="field">
     <label>Password</label>
@@ -170,7 +194,7 @@
         if (data.error) throw new Error(data.error);
         localStorage.setItem('mg_token', data.token);
         localStorage.setItem('mg_user', JSON.stringify(data.user));
-        window.location.href = '/app';
+        window.location.replace('/app');
         return;
       }
 
@@ -184,7 +208,7 @@
 
       if (adminRes.ok && !adminData.error) {
         localStorage.setItem('mg_admin_token', adminData.token);
-        window.location.href = '/admin';
+        window.location.replace('/admin');
         return;
       }
 
@@ -204,14 +228,14 @@
   if (employeeToken) {
     fetch(API + '/api/auth/verify', { headers: { 'Authorization': 'Bearer ' + employeeToken } })
       .then(r => r.json())
-      .then(d => { if (d.valid && !d.user.isAdmin) window.location.href = '/app'; })
+      .then(d => { if (d.valid && !d.user.isAdmin) window.location.replace('/app'); })
       .catch(() => localStorage.removeItem('mg_token'));
   }
 
   if (adminToken) {
     fetch(API + '/api/auth/verify', { headers: { 'Authorization': 'Bearer ' + adminToken } })
       .then(r => r.json())
-      .then(d => { if (d.valid && d.user.isAdmin) window.location.href = '/admin'; })
+      .then(d => { if (d.valid && d.user.isAdmin) window.location.replace('/admin'); })
       .catch(() => localStorage.removeItem('mg_admin_token'));
   }
 </script>

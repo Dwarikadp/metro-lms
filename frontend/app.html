@@ -89,11 +89,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 /* TOPBAR */
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;backdrop-filter:blur(20px)}
 .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.3),transparent)}
-.tb-left{display:flex;align-items:center;gap:16px}
+.tb-left{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-width:0}
 .tb-logo{height:38px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(201,162,39,0.2))}
 .tb-divider{width:1px;height:24px;background:var(--border2)}
 .tb-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--text);letter-spacing:0.3px}
-.tb-right{display:flex;align-items:center;gap:12px}
+.tb-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
 .user-chip{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:40px;padding:6px 14px 6px 8px}
 .user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#000}
 .user-name{font-size:13px;font-weight:500}
@@ -331,6 +331,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 /* Responsive */
 @media(max-width:960px){.learn-layout{grid-template-columns:1fr}.sidebar{width:240px}}
 @media(max-width:700px){.app-body{flex-direction:column}.sidebar{width:100%;max-height:220px}.main{padding:16px}.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){
+  .topbar{padding:12px 14px;height:auto;gap:10px;align-items:flex-start}
+  .tb-left,.tb-right{width:100%}
+  .tb-left{justify-content:space-between}
+  .tb-right{gap:8px}
+  .progress-pill{display:none}
+  .user-chip{padding:5px 10px;max-width:calc(100vw - 130px)}
+  .user-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .btn-sm{padding:7px 12px}
+  .tb-logo{height:32px}
+}
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:#fff!important}
@@ -346,6 +357,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </style>
 </head>
 <body>
+  <body ondragstart="return false" onselectstart="return false"></body>
 
 <!-- ══════════════════ LOGIN ══════════════════ -->
 <!-- ══════════════════ APP ══════════════════ -->
@@ -353,8 +365,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="topbar">
     <div class="tb-left">
       <img class="tb-logo" src="data:image/jpeg;base64,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" alt="Metro Group">
+      <button class="btn btn-ghost btn-sm" onclick="goBack()" aria-label="Back">← Back</button>
       <div class="tb-divider"></div>
-      <div class="tb-title">Metro Ignite</div>
+      <div class="tb-title">Metro Group</div>
     </div>
     <div class="tb-right">
       <div class="progress-pill">
@@ -620,10 +633,10 @@ const CD = {
 RERA: [
     {
       t: 'Setup', c: 'Area Definitions', n: 'Carpet Area under RERA',
-      o: 'Under Section 2(k) of the RERA Act, 2016, Carpet Area is defined as the net usable floor area of an apartment. It excludes external walls, service shafts, and exclusive balconies/terraces, but INCLUDES internal partition walls.',
+      o: 'As per Section 2(k) of the Real Estate (Regulation and Development) Act, 2016, the term Carpet Area has been clearly defined in order to bring uniformity and transparency in the sale of real estate units.',
       why: 'Prior to RERA, transactions were commonly based on super built-up area, leading to confusion. Carpet area establishes uniformity, ensures transparency, and makes it legally mandatory for developers to sell property based on actual usable area.',
       keys: [
-        'Carpet area is the smallest and most accurate representation of apartment size.',
+        'Carpet Area means the net usable floor area of an apartment, excluding the area covered by the external walls, areas under service shafts, exclusive balcony or verandah area, and exclusive open terrace area',
         'It is the ONLY legally accepted basis for sale and pricing under RERA.',
         'Includes usable indoor spaces only (bedrooms, kitchen, bathrooms, internal walls).',
         'Excludes all external and shared components.'
@@ -632,7 +645,7 @@ RERA: [
     },
     {
       t: 'Setup', c: 'Area Definitions', n: 'Built-Up Area',
-      o: 'Refers to the total area of the apartment measured up to the outer perimeter of the walls. It includes the carpet area, thickness of internal and external walls, and attached balconies/terraces.',
+      o: 'Built-up Area means the total area of a unit measured at the floor level to the outer perimeterof its walls, including the carpet area, the thickness of internal and external walls, and anyattached balconies, terraces, or utility areas forming part of the unit.In practical terms, the built-up area represents the structural footprint of the apartment.Architects, engineers, and approving authorities often use this measurement for the purposesof planning, approvals, and structural calculationsWhile customers may sometimes ask about built-up area during discussions, it is important forthe CRM team to explain clearly that RERA mandates disclosure and sale based on carpetarea.',
       why: 'Although built-up area is NOT used for pricing under RERA, it plays a significant role in architectural design, structural planning, and approval processes by authorities.',
       keys: [
         'Larger than carpet area as it includes structural elements and balconies.',
@@ -644,7 +657,7 @@ RERA: [
     },
     {
       t: 'Setup', c: 'Area Definitions', n: 'Super Built-Up Area',
-      o: 'Commonly referred to as the saleable area in traditional real estate practice. It consists of the built-up area PLUS a proportionate share of common areas (corridors, staircases, lift lobbies, amenities).',
+      o: 'Super built-up area is commonly referred to in the real estate industry as the saleable area ofa property. It consists of the built-up area of the apartment plus a proportionate share of thecommon areas within the building or project.Common areas may include facilities such as corridors, staircases, lift lobbies, entrance areas,amenities, and other shared infrastructure within the development.',
       why: 'Before RERA, developers used this for pricing, leading to inflated sizes and lack of clarity. Under RERA, pricing must be based on carpet area only, and super built-up area is no longer a valid basis for sale.',
       keys: [
         'Largest measurement among the three area types.',
@@ -656,7 +669,7 @@ RERA: [
     },
     {
       t: 'Setup', c: 'Area Definitions', n: 'Hierarchy of Area Types',
-      o: 'A comparative framework to distinguish between carpet, built-up, and super built-up areas.',
+      o: 'Understanding the difference between carpet area, built-up area, and super built-up area isessential when explaining project details to prospective buyers.',
       what: 'A comparative framework to distinguish between carpet, built-up, and super built-up areas.<br><br>' +
          // --- IMAGE CODE STARTS HERE ---
          '<img src="https://homebazaar-blog.s3.ap-south-1.amazonaws.com/knowledge/wp-content/uploads/2024/11/24132935/FeatureImage-Difference-Between-Carpet-Area-And-Built-up-Area.webp" alt="Area Comparison" style="width:100%; max-width:500px; display:block; margin: 0 auto 20px auto; border-radius:var(--r2); border:1px solid var(--border);">' +
@@ -711,7 +724,7 @@ RERA: [
      {
       t: 'Setup', c: 'RERA Compliance', n: 'Prohibition on Pre-Registration Marketing',
       o: 'Under Section 3 of the RERA Act, 2016, a promoter is prohibited from advertising, marketing, booking, or selling any unit in a real estate project without prior registration with the Real Estate Regulatory Authority (RERA).',
-      what: 'Under Section 3 of the RERA Act, 2016, a promoter is prohibited from advertising, marketing, booking, or selling any unit in a real estate project without prior registration with the Real Estate Regulatory Authority (RERA).<br><br>' +
+      what: 'The Real Estate (Regulation and Development) Act clearly states that a promoter cannotadvertise, market, book, sell, or offer for sale any unit in a real estate project without obtainingprior registration from the Real Estate Regulatory Authority.This provision has been introduced to protect prospective buyers from investing in projects thathave not yet received regulatory approval. Once the project is registered, the Authority provides a unique registration number and publishes the project details on its official portal..<br><br>' +
             '<div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px; align-items: center; background: var(--bg3); padding: 16px; border-radius: var(--r2); border: 1px solid var(--border);">' +
               '<div style="font-weight: 700; color: var(--accent); margin-bottom: 8px; text-align: center; letter-spacing: 1px;">COMPLIANCE FLOW</div>' +
               '<div style="background: var(--surface); padding: 10px 16px; border-radius: 6px; border: 1px solid var(--border2); color: var(--text); width: 100%; text-align: center; font-size: 13px;">Project Planning and Approvals</div>' +
@@ -736,7 +749,7 @@ RERA: [
    {
       t: 'Setup', c: 'RERA Compliance', n: 'Booking Amount Limits',
       o: 'The booking amount is the initial payment collected from a prospective allottee to reserve a unit. By law, it is strictly capped.',
-      what: 'The booking amount is the initial payment collected from a prospective allottee to reserve a unit. As per Section 13 of RERA, a promoter cannot accept more than 9% of the cost of the apartment without executing an Agreement for Sale.<br><br>' +
+      what: 'At the initial stage of customer engagement, a booking amount may be collected from theprospective allottee. As a matter of internal practice and regulatory compliance, the bookingamount collected should be 9% of the total cost of the apartment.<br><br>' +
             '<div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px; align-items: center; background: var(--bg3); padding: 16px; border-radius: var(--r2); border: 1px solid var(--border);">' +
               '<div style="font-weight: 700; color: var(--accent); margin-bottom: 8px; text-align: center; letter-spacing: 1px;">BOOKING PROCESS</div>' +
               '<div style="background: var(--surface); padding: 10px 16px; border-radius: 6px; border: 1px solid var(--border2); color: var(--text); width: 100%; text-align: center; font-size: 13px;">Customer Selects Unit</div>' +
@@ -747,7 +760,7 @@ RERA: [
               '<div style="color: var(--text3); font-weight: bold; font-size: 16px;">↓</div>' +
               '<div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--green); padding: 10px 16px; border-radius: 6px; width: 100%; text-align: center; font-weight: 600; font-size: 13px;">Allotment Process Initiated</div>' +
             '</div>',
-      why: 'Capping the advance fee prevents the misuse of funds by developers and protects buyers from making premature, heavy financial commitments before legal contracts are signed.',
+      why: 'RERA stipulates that a promoter cannot accept more than ten percent of the cost of theapartment without first entering into a formal Agreement for Sale. Therefore, CRMrepresentatives must ensure that this threshold is not exceeded at the booking stage.Capping the advance fee prevents the misuse of funds by developers and protects buyers from making premature, heavy financial commitments before legal contracts are signed.',
       keys: [
         'Legal Limit: Section 13 of RERA prohibits accepting more than 10% without executing an Agreement for Sale.',
         'Internal Practice: Metro Group mandates collecting exactly 9% to ensure a compliance buffer.',
@@ -758,7 +771,7 @@ RERA: [
     },
     {
       t: 'Setup', c: 'RERA Compliance', n: 'Agreement for Sale Requirements',
-      o: 'A legally binding agreement executed between the promoter and the allottee. Execution is mandatory before accepting more than 10% payment.',
+      o: 'After the permissible booking amount of 9% (as per management decision but 10% as perRERA Act, 2016) has been collected, the next important step is the execution of the Agreementfor Sale (AFS). This agreement formalizes the terms and conditions governing the purchase ofthe apartment and the obligations of both the promoter and the allottee.According to Section 13 of the RERA Act, a promoter is not permitted to accept more than 10% of the cost of the apartment as advance payment without first entering into a written agreement for sale and registering the same under the applicable law.',
       what: 'A legally binding agreement executed between the promoter and the allottee. Under Section 13 of RERA, execution of the Agreement for Sale is mandatory before accepting more than 10% payment.<br><br>' +
             '<div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px; align-items: center; background: var(--bg3); padding: 16px; border-radius: var(--r2); border: 1px solid var(--border);">' +
               '<div style="font-weight: 700; color: var(--accent); margin-bottom: 8px; text-align: center; letter-spacing: 1px;">AGREEMENT EXECUTION FLOW</div>' +
@@ -798,21 +811,21 @@ RERA: [
   train: 'CRM teams must ensure all promotional communications strictly adhere to approved project details. Use ONLY verified materials, avoid verbal exaggerations, and ensure customers are directed to the official Authority website for project veracity.'
 },
     {
-      t: 'Setup', c: 'Financial Transparency', n: 'Total Cost Components',
+      t: 'Setup', c: 'Financial Transparency', n: 'Total Cost of the Apartment',
       o: 'The complete financial obligation of the allottee. It is not limited to the base price, but includes all additional charges associated with ownership and usage.',
-      why: 'Complete transparency in the total cost prevents disputes related to hidden charges, builds customer trust, and ensures compliance with RERA principles of full disclosure.',
+      why: 'It is essential that the total cost of the apartment is clearly communicated to the customer in transparent and comprehensive manner. The total cost is not limited to the base price of theunit but includes several other components associated with the purchase and use of the property.',
       keys: [
         'Must include Basic Sale Price, Covered Parking, and Electricity charges.',
         'Must include Maintenance, Clubhouse amenities, and Preferential Location Charges (PLC).',
         'Must explicitly include Goods and Services Tax (GST) and statutory taxes.',
-        'No hidden or undisclosed charges are permitted under any circumstance.'
+        'The CRM team must ensure that there are no hidden costs and that the customer fullyunderstands the complete financial commitment associated with the purchase.'
       ],
       train: 'Provide a complete, itemized cost breakdown to the customer. Clarify each component in simple terms and ensure they acknowledge the full financial commitment.'
     },
    {
       t: 'Transaction', c: 'Cancellation and Default', n: 'Cancellation by Allottee',
       o: 'The formal process (Clause 9 of AFS) where the allottee chooses to withdraw from the purchase after booking or agreement execution.',
-      what: 'The formal process (Clause 9 of AFS) where the allottee chooses to withdraw from the purchase after booking or agreement execution.<br><br>' +
+      what: 'When the allottee chooses to cancel the booking, the CRM team must follow the prescribed procedure. The reason for cancellation should be properly recorded for internal documentation and regulatory purposes.<br><br>' +
             '<div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px; align-items: center; background: var(--bg3); padding: 16px; border-radius: var(--r2); border: 1px solid var(--border);">' +
               '<div style="font-weight: 700; color: var(--accent); margin-bottom: 8px; text-align: center; letter-spacing: 1px;">CANCELLATION PROCEDURE</div>' +
               '<div style="background: var(--surface); padding: 10px 16px; border-radius: 6px; border: 1px solid var(--border2); color: var(--text); width: 100%; text-align: center; font-size: 13px;">Cancellation Request Received</div>' +
@@ -837,7 +850,7 @@ RERA: [
     {
   t: 'Transaction',
   c: 'Cancellation and Default',
-  n: 'Payment Default Procedure',
+  n: 'Timely Payment & Default by Allottee',
   o: 'Under the RERA framework, once an allottee enters into an Agreement for Sale, they are required to make payments according to the schedule specified. This includes installments, registration charges, municipal taxes, and utility/maintenance fees.',
   what: `
     <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r2); padding: 16px; margin-bottom: 14px;">
@@ -1265,17 +1278,32 @@ function initials(n){ return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpp
 const REAL_QUESTIONS = {
   // ── RERA MODULE ──────────────────────────────────────────
   'Carpet Area under RERA': [
-    {q:'According to RERA Section 2(k), which of the following is INCLUDED in Carpet Area?', opts:['The exclusive open terrace attached to the unit', 'The area covered by internal partition walls', 'The area under service shafts'], correct:1},
-    {q:'Which of these spaces is explicitly EXCLUDED from the legal Carpet Area definition?', opts:['The kitchen and bathrooms', 'Internal partition walls', 'External walls and exclusive balcony areas'], correct:2},
-    {q:'What does the Carpet Area practically represent to a prospective buyer?', opts:['The actual usable area inside the apartment to place furniture', 'The structural footprint including the balconies', 'The saleable area inclusive of the common lift lobby'], correct:0},
-    {q:'SITUATION: A client touring a sample flat asks if their attached private balcony counts towards the price of the apartment. How do you respond?', opts:['Yes, since it is for their exclusive use, it is priced in.', 'No, RERA mandates pricing on Carpet Area, which strictly excludes balconies.', 'Yes, but it is calculated at 50% of the standard rate.'], correct:1},
-    {q:'SITUATION: You are entering a new property\'s details into the Farvision ERP system. Which area metric MUST you select as the primary reference for pricing?', opts:['Built-Up Area', 'Super Built-Up Area', 'Carpet Area'], correct:2},
-    {q:'SITUATION: A traditional buyer wants to know the exact "usable space" they have for their interior decorator. What metric do you quote?', opts:['Carpet Area', 'Built-Up Area', 'Super Built-Up Area'], correct:0},
-    {q:'Under RERA, how is an "exclusive verandah" treated during area calculation?', opts:['It is strictly excluded from the Carpet Area.', 'It is included if it has a roof.', 'It is calculated at a 50% ratio.'], correct:0},
-    {q:'Why did the government make Carpet Area the mandatory pricing standard?', opts:['To establish uniformity across projects and protect buyers from inflated area representations.', 'Because it is easier for architects to draw.', 'To increase the overall stamp duty collection.'], correct:0},
-    {q:'SITUATION: A customer argues that the carpet area seems too small compared to the quoted project size. How do you explain this?', opts:['Agree with them and offer to price it on super built-up area instead.', 'Explain that carpet area excludes external walls and shared spaces, showing only the true usable living space.', 'Tell them the municipal authority made an error in measurement.'], correct:1},
-    {q:'Which specific legal section of the RERA Act, 2016 defines Carpet Area?', opts:['Section 13', 'Section 12', 'Section 2(k)'], correct:2}
-  ],
+    // --- SIMPLE/MODERATE SITUATIONAL QUESTIONS ---
+    {q: 'SITUATION: A client measures the bedroom floor and finds it is 120 sq.ft, but the internal walls add another 10 sq.ft. What is the RERA Carpet Area for this room?', opts: ['120 sq.ft', '130 sq.ft', '110 sq.ft'], correct: 1},
+    {q: 'In the Farvision "Unit Master," you see a field for "Exclusive Balcony." Should this value be summed into the "RERA Carpet Area" field?', opts: ['Yes, it belongs to the buyer', 'No, RERA mandates they stay separate even if priced together', 'Only if the balcony is covered'], correct: 1},
+    {q: 'Which of these would cause a "Non-Compliance" flag during a RERA audit of a Metro Group project?', opts: ['Pricing a flat based on Super Built-up Area', 'Including internal walls in Carpet Area', 'Excluding the lift lobby from the flat area'], correct: 0},
+    {q: 'SITUATION: A buyer asks why the "Saleable Area" is so much higher than the Carpet Area. What is the most professional response?', opts: ['"The government takes the extra area as tax."', '"The saleable area includes your share of common amenities like the lobby, stairs, and club house."', '"The walls are very thick in this project."'], correct: 1},
+    {q: 'Under RERA Section 2(k), if a structural column is located inside a bedroom, is the area occupied by that column included in the Carpet Area?', opts: ['No, it is a structural element', 'Yes, as it is within the internal partition space', 'Only if it is less than 1 sq.ft'], correct: 1},
+    {q: 'SITUATION: You are generating a DAR for a project. You notice the "Net Usable Area" is being used interchangeably with "Carpet Area." Is this technically 100% correct?', opts: ['Yes, they are the same', 'No, Carpet Area includes internal walls while Net Usable Area typically does not', 'Yes, but only for commercial shops'], correct: 1},
+    {q: 'Why is the "External Wall" thickness (the wall facing the street) excluded from your personal Carpet Area?', opts: ['To save on stamp duty', 'Because it serves as a common building envelope/boundary', 'Because it cannot be painted from inside'], correct: 1},
+    {q: 'A customer argues that their "Private Open Terrace" should be free if it isn\'t part of the Carpet Area. How do you clarify?', opts: ['"You are right, it is a gift."', '"It is an Exclusive Area; while not in Carpet Area, it is still legally transferable and priced separately."', '"It is actually part of the Super Built-up area."'], correct: 1},
+
+    // --- CONNECT THE ARROW / MATCHING QUESTIONS (2 REQUIRED) ---
+    {
+        type: 'matching',
+        q: 'LOGIC TASK: Match the Flat Component to its correct RERA Treatment Category:',
+        columnA: ['Inner Bedroom Floor', 'External Boundary Wall', 'Internal Bathroom Wall'],
+        columnB: ['Net Usable Area', 'Strictly Excluded', 'Included in Carpet Area'],
+        correctMatches: { 'Inner Bedroom Floor': 'Net Usable Area', 'External Boundary Wall': 'Strictly Excluded', 'Internal Bathroom Wall': 'Included in Carpet Area' }
+    },
+    {
+        type: 'matching',
+        q: 'SITUATION TASK: Match the Customer Query to the correct technical Metric you should explain:',
+        columnA: ['"How much space for my wardrobe?"', '"What is the total footprint of the flat?"', '"Why is the total area so large?"'],
+        columnB: ['Explain Carpet Area', 'Explain Built-up Area', 'Explain Super Built-up Area'],
+        correctMatches: { '"How much space for my wardrobe?"': 'Explain Carpet Area', '"What is the total footprint of the flat?"': 'Explain Built-up Area', '"Why is the total area so large?"': 'Explain Super Built-up Area' }
+    }
+],
   
   'Built-Up Area': [
     {q:'Who primarily uses Built-Up Area measurement?', opts:['The CRM team for final pricing', 'Architects, engineers and approving authorities', 'Customers for furniture layout planning'], correct:1},
@@ -1724,7 +1752,23 @@ function showApp(){ showScreen('screen-app'); renderTopBar(); renderSidebar(); i
 // ═══════════════════════════════════════════════════════════
 //  LOGIN
 // ═══════════════════════════════════════════════════════════
-function logout(){ localStorage.removeItem('mg_fv'); localStorage.removeItem('mg_token'); localStorage.removeItem('mg_user'); window.location.href='/'; }
+function logout(){ localStorage.removeItem('mg_fv'); localStorage.removeItem('mg_token'); localStorage.removeItem('mg_user'); window.location.replace('/'); }
+
+function goBack() {
+  if (S.curView === 'cert') {
+    renderDash();
+    return;
+  }
+  if (S.curView === 'topic' || S.curView === 'cat') {
+    if (S.curMod) selMod(S.curMod);
+    return;
+  }
+  if (S.curView === 'modquiz') {
+    if (S.curMod) selMod(S.curMod);
+    return;
+  }
+  renderDash();
+}
 
 // ═══════════════════════════════════════════════════════════
 //  TOP BAR
